@@ -1,0 +1,19 @@
+# Archivos del sistema y temporales
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Logs y dependencias (si aplica en el futuro)
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Configuraciones locales de editores
+.vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?

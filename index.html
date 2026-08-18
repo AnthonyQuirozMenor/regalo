@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Una sorpresa especial de cumpleaños llena de amor e interactividad.">
+    <title>Feliz Cumpleaños, Mi Amor ❤️</title>
+    <!-- Fuentes elegantes de Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Outfit:wght@300;400;600&family=Playfair+Display:ital,wght@0,600;0,800;1,400&display=swap" rel="stylesheet">
+    <!-- Iconos FontAwesome para el reproductor y decoraciones -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Archivo de estilos principal -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- Canvas para el fondo animado de corazones y partículas -->
+    <canvas id="canvas-particles"></canvas>
+
+    <!-- Pantalla Inicial / Overlay de Bienvenida -->
+    <div id="intro-overlay" class="intro-overlay">
+        <div class="intro-content">
+            <div class="heart-pulse-intro">❤️</div>
+            <h1 class="intro-title">Para el amor de mi vida</h1>
+            <p class="intro-subtitle">Preparé algo especial para ti...</p>
+            <button id="btn-start" class="btn-start-neon">
+                Comenzar <i class="fa-solid fa-heart beat-icon"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- Reproductor de Música Discreto (Flotante) -->
+    <div id="music-player" class="music-player hidden">
+        <button id="btn-play-pause" class="btn-music" aria-label="Reproducir o pausar música">
+            <i class="fa-solid fa-play" id="music-icon"></i>
+            <span class="music-wave" id="music-wave-bars">
+                <span></span><span></span><span></span>
+            </span>
+        </button>
+        <!-- Elemento Audio con fallback online de piano romántico -->
+        <audio id="bg-music" loop>
+            <source src="audio/romantic_song.mp3" type="audio/mpeg">
+            <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-8.mp3" type="audio/mpeg">
+        </audio>
+    </div>
+
+    <!-- Contenedor Principal (Revelado tras presionar Comenzar) -->
+    <main id="main-content" class="main-content hidden">
+
+        <!-- Sección de Bienvenida / Cumpleaños -->
+        <section id="hero-section" class="section hero-section scroll-reveal">
+            <div class="birthday-card">
+                <h1 class="main-title">¡FELIZ CUMPLEAÑOS! <span class="neon-heart-txt">❤️</span></h1>
+                
+                <!-- Corazón gigante de neón pulsante -->
+                <div class="neon-heart-container">
+                    <svg class="neon-heart-svg" viewBox="0 0 32 29.6">
+                        <path d="M23.6,0c-3.4,0-6.3,2.7-7.6,5.6C14.7,2.7,11.8,0,8.4,0C3.8,0,0,3.8,0,8.4c0,9.4,9.5,11.9,16,21.2
+                        c6.1-9.3,16-12.1,16-21.2C32,3.8,28.2,0,23.6,0z"/>
+                    </svg>
+                    <div class="neon-heart-text">
+                        <p>Que la pases genial en tu día especial</p>
+                        <span class="heart-emoji-inside">❤️</span>
+                    </div>
+                </div>
+
+                <!-- Dedicatoria principal editable -->
+                <div class="dedication-text">
+                    <p id="main-birthday-message">
+                        Hoy es un día increíble porque celebramos la existencia de la persona más maravillosa de este mundo: tú. Gracias por iluminar mi vida con tu sonrisa, por cada abrazo y por hacer que cada día a tu lado sea una aventura mágica. ¡Feliz día, mi reina!
+                    </p>
+                    <div class="signature">
+                        <span class="date" id="celebration-date">18 de Agosto, 2026</span>
+                        <span class="sender" id="sender-signature">Con todo mi amor, Tu Novio</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Elementos flotantes interactivos distribuidos (se inyectan más dinámicamente) -->
+        <div id="floating-badges-container">
+            <!-- Badges CSS con animaciones independientes -->
+            <div class="floating-badge text-badge b1">Te amo ❤️</div>
+            <div class="floating-badge text-badge b2">Mi niña hermosa</div>
+            <div class="floating-badge text-badge b3">Me encantas</div>
+            <div class="floating-badge text-badge b4">Siempre tú ✨</div>
+            <div class="floating-badge text-badge b5">Mi persona favorita</div>
+            <div class="floating-badge text-badge b6">Gracias por existir</div>
+            <div class="floating-badge text-badge b7">Juntos por siempre 🌹</div>
+        </div>
+
+        <!-- Sección de Galería de Fotos (Polaroid) -->
+        <section id="gallery-section" class="section gallery-section scroll-reveal">
+            <h2 class="section-title"><i class="fa-solid fa-camera-retro"></i> Nuestros Momentos</h2>
+            <p class="section-subtitle">Un pequeño recorrido por algunas de nuestras mejores historias...</p>
+            
+            <div class="polaroid-grid" id="photo-gallery">
+                <!-- Polaroid 1 -->
+                <div class="polaroid-card scroll-reveal-item">
+                    <div class="polaroid-img-wrapper">
+                        <img src="images/photo1.png" alt="Nuestra primera cita" class="polaroid-img">
+                        <div class="polaroid-neon-glow"></div>
+                    </div>
+                    <div class="polaroid-caption">
+                        <p class="polaroid-text">Bajo la luz de la luna ✨</p>
+                        <span class="polaroid-date">Nuestras noches favoritas</span>
+                    </div>
+                </div>
+
+                <!-- Polaroid 2 -->
+                <div class="polaroid-card scroll-reveal-item">
+                    <div class="polaroid-img-wrapper">
+                        <img src="images/photo2.png" alt="Caminata juntos" class="polaroid-img">
+                        <div class="polaroid-neon-glow"></div>
+                    </div>
+                    <div class="polaroid-caption">
+                        <p class="polaroid-text">Caminando de la mano 🌸</p>
+                        <span class="polaroid-date">Construyendo caminos</span>
+                    </div>
+                </div>
+
+                <!-- Polaroid 3 -->
+                <div class="polaroid-card scroll-reveal-item">
+                    <div class="polaroid-img-wrapper">
+                        <img src="images/photo3.png" alt="Momento acogedor" class="polaroid-img">
+                        <div class="polaroid-neon-glow"></div>
+                    </div>
+                    <div class="polaroid-caption">
+                        <p class="polaroid-text">Tardes de café y risas ☕</p>
+                        <span class="polaroid-date">Mi lugar seguro eres tú</span>
+                    </div>
+                </div>
+
+                <!-- Polaroid 4 -->
+                <div class="polaroid-card scroll-reveal-item">
+                    <div class="polaroid-img-wrapper">
+                        <img src="images/photo4.png" alt="Atardecer juntos" class="polaroid-img">
+                        <div class="polaroid-neon-glow"></div>
+                    </div>
+                    <div class="polaroid-caption">
+                        <p class="polaroid-text">Atardeceres infinitos 🌅</p>
+                        <span class="polaroid-date">Por mil vidas más contigo</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Sección de la Carta Romántica -->
+        <section id="letter-section" class="section letter-section scroll-reveal">
+            <h2 class="section-title"><i class="fa-solid fa-envelope-open-text"></i> Una Carta Para Ti</h2>
+            
+            <div class="letter-envelope-container">
+                <!-- El sobre que se abre -->
+                <div class="envelope-wrapper" id="envelope-wrapper">
+                    <div class="envelope">
+                        <div class="flap"></div>
+                        <div class="pocket"></div>
+                        <div class="letter" id="interactive-letter">
+                            <div class="letter-inner">
+                                <h3 class="letter-title">Para ti, mi amor...</h3>
+                                <div class="letter-body">
+                                    <div id="typewriter-text" class="typewriter-text">
+                                        <!-- El texto se auto-escribirá aquí con la animación de script.js -->
+                                    </div>
+                                    <div id="fallback-letter-text" class="hidden">
+                                        Desde el momento en que entraste en mi vida, todo cambió de color. Tu risa se convirtió en mi melodía favorita, y tu felicidad en mi mayor deseo.
+
+                                        Hoy que celebras un año más de vida, quiero recordarte lo increíblemente especial que eres. No solo eres mi novia, eres mi mejor amiga, mi confidente y el amor de mi vida. Adoro cada pequeño detalle de ti: cómo te emocionas por las cosas pequeñas, la luz de tu mirada y la paz que me transmites con solo tomar mi mano.
+
+                                        Espero que este cumpleaños sea tan hermoso como tu corazón. Prometo hacer todo lo posible para que sonrías hoy y cada uno de los días que sigan. Que la vida nos regale muchísimos cumpleaños más para celebrar juntos.
+
+                                        ¡Te amo infinitamente, hoy y siempre! ❤️
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="envelope-hint" id="envelope-hint">Haz clic en el sobre para leer 💌</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Sección Especial del Gran Corazón Sorpresa -->
+        <section id="surprise-section" class="section surprise-section scroll-reveal">
+            <div class="surprise-container">
+                <h2 class="section-title"><i class="fa-solid fa-gift"></i> Un Detalle Especial</h2>
+                <p class="section-subtitle">Tengo una última confesión... Toca el corazón gigante</p>
+                
+                <div class="big-interactive-heart-container">
+                    <button id="btn-special-heart" class="big-heart-btn" aria-label="Tocar para revelar sorpresa">
+                        <span class="heart-pulse-glow"></span>
+                        <div class="heart-shape">❤️</div>
+                    </button>
+                </div>
+
+                <!-- Mensaje Sorpresa Revelado -->
+                <div id="special-surprise-message" class="special-surprise-message hidden-message">
+                    <div class="surprise-box">
+                        <p class="surprise-highlight-text">Te amo más de lo que puedo explicar ❤️</p>
+                        <p class="surprise-subtext">Eres mi presente, mi futuro y mi deseo cumplido en cada estrella. Gracias por ser mi mayor felicidad.</p>
+                        <div class="confetti-sparkles-container">✨ 💖 ✨</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="love-footer">
+            <p>Hecho con todo el amor del mundo para ti</p>
+            <p class="footer-copy">&copy; 2026 - Diseñado para una persona única</p>
+        </footer>
+
+    </main>
+
+    <!-- Archivo JS principal -->
+    <script src="script.js"></script>
+</body>
+</html>

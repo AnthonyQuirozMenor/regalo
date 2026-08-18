@@ -1,0 +1,1048 @@
+/* ==========================================================================
+   SISTEMA DE DISEÑO Y VARIABLES (AESTHETICS PREMIUM)
+   ========================================================================== */
+:root {
+    --bg-dark: #050508;
+    --bg-gradient: radial-gradient(circle at center, #160a14 0%, #050508 100%);
+    --neon-red: #ff2a5f;
+    --neon-red-glow: 0 0 10px rgba(255, 42, 95, 0.8), 0 0 25px rgba(255, 42, 95, 0.4), 0 0 50px rgba(255, 42, 95, 0.2);
+    --neon-pink: #ff5eb4;
+    --neon-pink-glow: 0 0 10px rgba(255, 94, 180, 0.8), 0 0 25px rgba(255, 94, 180, 0.4);
+    --neon-gold: #ffd700;
+    --text-white: #f5f5fa;
+    --text-muted: #b5a9b4;
+    --glass-bg: rgba(12, 6, 12, 0.7);
+    --glass-border: 1px solid rgba(255, 42, 95, 0.2);
+    --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5);
+    
+    --font-heading: 'Playfair Display', Georgia, serif;
+    --font-body: 'Outfit', sans-serif;
+    --font-cursive: 'Dancing Script', cursive;
+}
+
+/* Reset y Estilos Generales */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+    overflow-x: hidden;
+}
+
+body {
+    background-color: var(--bg-dark);
+    background-image: var(--bg-gradient);
+    color: var(--text-white);
+    font-family: var(--font-body);
+    min-height: 100vh;
+    overflow-x: hidden;
+    position: relative;
+}
+
+/* Fondo de partículas Canvas */
+#canvas-particles {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1; /* Bajo todo, pero arriba del body gradient */
+    pointer-events: none; /* Permite clicks a través del canvas */
+}
+
+/* Ocultar scrollbars mientras se inicia */
+body.no-scroll {
+    overflow: hidden;
+}
+
+/* ==========================================================================
+   PANTALLA DE BIENVENIDA (INTRO OVERLAY)
+   ========================================================================== */
+.intro-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #030305;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+    transition: opacity 1.5s cubic-bezier(0.25, 1, 0.5, 1), filter 1.5s ease;
+    text-align: center;
+}
+
+.intro-overlay.fade-out {
+    opacity: 0;
+    pointer-events: none;
+    filter: blur(20px);
+}
+
+.intro-content {
+    max-width: 600px;
+    padding: 20px;
+    animation: fadeInIntro 1.5s ease-out;
+}
+
+.heart-pulse-intro {
+    font-size: 5rem;
+    color: var(--neon-red);
+    text-shadow: var(--neon-red-glow);
+    margin-bottom: 25px;
+    animation: pulseHeart 1.2s infinite alternate cubic-bezier(0.215, 0.610, 0.355, 1);
+}
+
+.intro-title {
+    font-family: var(--font-heading);
+    font-size: 3rem;
+    font-weight: 800;
+    margin-bottom: 15px;
+    background: linear-gradient(45deg, #ff2a5f, #ff7db2, #ffd700);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+.intro-subtitle {
+    font-size: 1.2rem;
+    color: var(--text-muted);
+    margin-bottom: 40px;
+    font-weight: 300;
+    letter-spacing: 2px;
+}
+
+.btn-start-neon {
+    font-family: var(--font-body);
+    font-size: 1.15rem;
+    font-weight: 600;
+    color: #fff;
+    background: transparent;
+    padding: 15px 40px;
+    border: 2px solid var(--neon-red);
+    border-radius: 50px;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.4s ease;
+    box-shadow: 0 0 15px rgba(255, 42, 95, 0.2), inset 0 0 15px rgba(255, 42, 95, 0.1);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+.btn-start-neon:hover {
+    background: var(--neon-red);
+    box-shadow: var(--neon-red-glow);
+    transform: translateY(-3px);
+}
+
+.btn-start-neon:active {
+    transform: translateY(-1px);
+}
+
+.beat-icon {
+    margin-left: 8px;
+    animation: pulseIcon 1.2s infinite;
+}
+
+/* ==========================================================================
+   REPRODUCTOR DE MÚSICA DISCRETO
+   ========================================================================== */
+.music-player {
+    position: fixed;
+    bottom: 25px;
+    right: 25px;
+    z-index: 1000;
+    transition: all 0.5s ease;
+}
+
+.music-player.hidden {
+    opacity: 0;
+    transform: translateY(20px);
+    pointer-events: none;
+}
+
+.btn-music {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: rgba(12, 6, 12, 0.85);
+    border: 1px solid rgba(255, 42, 95, 0.4);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+    color: #fff;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.2rem;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.btn-music:hover {
+    border-color: var(--neon-red);
+    box-shadow: 0 0 15px rgba(255, 42, 95, 0.6);
+    transform: scale(1.08);
+}
+
+/* Animación de ondas de música */
+.music-wave {
+    display: none;
+    position: absolute;
+    bottom: 8px;
+    width: 14px;
+    height: 12px;
+    justify-content: space-between;
+    align-items: flex-end;
+}
+
+.music-wave.active {
+    display: flex;
+}
+
+.music-wave span {
+    width: 3px;
+    height: 100%;
+    background-color: var(--neon-pink);
+    border-radius: 3px;
+    transform-origin: bottom;
+    animation: bounceWave 1s ease-in-out infinite alternate;
+}
+
+.music-wave span:nth-child(2) {
+    animation-delay: -0.4s;
+}
+
+.music-wave span:nth-child(3) {
+    animation-delay: -0.7s;
+}
+
+/* ==========================================================================
+   ESTRUCTURA CONTENEDORA Y SECCIONES
+   ========================================================================== */
+.main-content {
+    position: relative;
+    z-index: 2; /* Sobre el canvas de partículas */
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 40px 20px 100px 20px;
+    opacity: 0;
+    transition: opacity 1.5s ease;
+}
+
+.main-content.visible {
+    opacity: 1;
+}
+
+.section {
+    padding: 80px 0;
+    position: relative;
+}
+
+/* Efecto scroll reveal en CSS con transiciones fluidas */
+.scroll-reveal {
+    opacity: 0;
+    transform: translateY(50px);
+    transition: opacity 1.2s cubic-bezier(0.25, 1, 0.5, 1), transform 1.2s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+.scroll-reveal.active {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Títulos de sección */
+.section-title {
+    font-family: var(--font-heading);
+    font-size: 2.3rem;
+    text-align: center;
+    margin-bottom: 10px;
+    position: relative;
+    background: linear-gradient(45deg, #ff2a5f, #ff7db2);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-weight: 700;
+}
+
+.section-title i {
+    -webkit-text-fill-color: initial;
+    color: var(--neon-pink);
+    margin-right: 8px;
+    text-shadow: var(--neon-pink-glow);
+}
+
+.section-subtitle {
+    text-align: center;
+    font-size: 1.05rem;
+    color: var(--text-muted);
+    margin-bottom: 50px;
+    font-weight: 300;
+    letter-spacing: 1px;
+}
+
+/* ==========================================================================
+   SECCIÓN 1: BIENVENIDA / CORAZÓN NEÓN
+   ========================================================================== */
+.birthday-card {
+    background: var(--glass-bg);
+    border: var(--glass-border);
+    box-shadow: var(--glass-shadow);
+    border-radius: 24px;
+    padding: 50px 30px;
+    text-align: center;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    position: relative;
+    overflow: hidden;
+}
+
+.birthday-card::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(255, 42, 95, 0.05) 0%, transparent 60%);
+    pointer-events: none;
+}
+
+.main-title {
+    font-family: var(--font-heading);
+    font-size: 2.8rem;
+    font-weight: 800;
+    letter-spacing: 1px;
+    margin-bottom: 30px;
+    text-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+}
+
+.neon-heart-txt {
+    color: var(--neon-red);
+    text-shadow: var(--neon-red-glow);
+    display: inline-block;
+    animation: heartBeatTxt 1.2s infinite;
+}
+
+/* Corazón de neón SVG */
+.neon-heart-container {
+    width: 280px;
+    height: 280px;
+    margin: 0 auto 35px auto;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.neon-heart-svg {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    fill: rgba(255, 42, 95, 0.1);
+    stroke: var(--neon-red);
+    stroke-width: 1.5;
+    filter: drop-shadow(0 0 15px rgba(255, 42, 95, 0.8));
+    animation: neonPulse 1.8s infinite alternate cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.neon-heart-text {
+    position: relative;
+    z-index: 5;
+    padding: 30px;
+    max-width: 180px;
+    text-align: center;
+}
+
+.neon-heart-text p {
+    font-family: var(--font-cursive);
+    font-size: 1.5rem;
+    font-weight: bold;
+    line-height: 1.3;
+    color: #fff;
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.8), 0 0 8px rgba(255, 94, 180, 0.5);
+}
+
+.heart-emoji-inside {
+    display: inline-block;
+    font-size: 1.4rem;
+    margin-top: 8px;
+    animation: pulseIcon 1s infinite alternate;
+}
+
+/* Dedicatoria */
+.dedication-text {
+    font-size: 1.15rem;
+    line-height: 1.8;
+    color: var(--text-white);
+    margin: 20px 0;
+    font-weight: 300;
+}
+
+.signature {
+    margin-top: 40px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border-top: 1px solid rgba(255, 42, 95, 0.15);
+    padding-top: 20px;
+}
+
+.signature .date {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    margin-bottom: 5px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+.signature .sender {
+    font-family: var(--font-cursive);
+    font-size: 2.2rem;
+    color: var(--neon-pink);
+    text-shadow: 0 0 5px rgba(255, 94, 180, 0.3);
+}
+
+/* ==========================================================================
+   ELEMENTOS Y BADGES FLOTANTES
+   ========================================================================== */
+#floating-badges-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 3;
+}
+
+.floating-badge {
+    position: absolute;
+    padding: 10px 18px;
+    background: rgba(15, 6, 15, 0.8);
+    border: 1px solid rgba(255, 94, 180, 0.3);
+    border-radius: 30px;
+    color: #fff;
+    font-size: 0.9rem;
+    font-weight: 500;
+    box-shadow: var(--glass-shadow);
+    white-space: nowrap;
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+    pointer-events: auto; /* Permite hover */
+    transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.floating-badge:hover {
+    transform: scale(1.1) rotate(2deg);
+    border-color: var(--neon-pink);
+    box-shadow: var(--neon-pink-glow);
+    cursor: default;
+}
+
+/* Distribución manual por la pantalla */
+.b1 { top: 12%; left: -5%; animation: floatY 6s infinite ease-in-out; }
+.b2 { top: 25%; right: -5%; animation: floatY 7s infinite ease-in-out 1s; }
+.b3 { top: 45%; left: -8%; animation: floatY 8s infinite ease-in-out 0.5s; }
+.b4 { top: 60%; right: -8%; animation: floatY 6.5s infinite ease-in-out 1.5s; }
+.b5 { top: 78%; left: -4%; animation: floatY 7.5s infinite ease-in-out 2s; }
+.b6 { top: 90%; right: -5%; animation: floatY 8.5s infinite ease-in-out 0.5s; }
+.b7 { top: 97%; left: 15%; animation: floatY 9s infinite ease-in-out 1.2s; }
+
+/* ==========================================================================
+   SECCIÓN 2: GALERÍA DE FOTOS POLAROID
+   ========================================================================== */
+.polaroid-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 35px;
+    justify-content: center;
+    padding: 10px;
+}
+
+.polaroid-card {
+    background: #ffffff;
+    padding: 15px 15px 30px 15px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+    border-radius: 4px;
+    transition: all 0.5s cubic-bezier(0.25, 1, 0.5, 1);
+    position: relative;
+    cursor: pointer;
+    overflow: hidden;
+}
+
+/* Rotación desordenada para simular fotos reales */
+.polaroid-card:nth-child(even) {
+    transform: rotate(3deg);
+}
+
+.polaroid-card:nth-child(odd) {
+    transform: rotate(-3deg);
+}
+
+.polaroid-img-wrapper {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 1; /* Cuadrado clásico polaroid */
+    overflow: hidden;
+    background-color: #f0f0f0;
+    border-radius: 2px;
+}
+
+.polaroid-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+/* Brillo neón interno de polaroid hover */
+.polaroid-neon-glow {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    box-shadow: inset 0 0 30px rgba(255, 42, 95, 0);
+    transition: box-shadow 0.4s ease;
+    pointer-events: none;
+}
+
+.polaroid-caption {
+    margin-top: 15px;
+    text-align: center;
+    color: #333339;
+}
+
+.polaroid-text {
+    font-family: var(--font-cursive);
+    font-size: 1.55rem;
+    font-weight: bold;
+    margin-bottom: 5px;
+    color: #1a1a24;
+}
+
+.polaroid-date {
+    font-family: var(--font-body);
+    font-size: 0.8rem;
+    color: #6e6e77;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+/* Efecto hover */
+.polaroid-card:hover {
+    transform: scale(1.06) rotate(0deg) translateY(-10px) !important;
+    box-shadow: 0 15px 35px rgba(255, 42, 95, 0.35);
+    z-index: 10;
+}
+
+.polaroid-card:hover .polaroid-img {
+    transform: scale(1.08);
+}
+
+.polaroid-card:hover .polaroid-neon-glow {
+    box-shadow: inset 0 0 40px rgba(255, 42, 95, 0.6);
+}
+
+/* ==========================================================================
+   SECCIÓN 3: CARTA ROMÁNTICA
+   ========================================================================== */
+.letter-envelope-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 480px;
+    position: relative;
+    perspective: 1000px;
+}
+
+.envelope-wrapper {
+    position: relative;
+    width: 380px;
+    height: 250px;
+    cursor: pointer;
+    transition: transform 0.5s ease;
+}
+
+.envelope {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-color: #ff3366; /* Rojo/rosa carmín */
+    border-radius: 8px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    transform-style: preserve-3d;
+}
+
+/* Solapa superior */
+.flap {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 0;
+    height: 0;
+    border-left: 190px solid transparent;
+    border-right: 190px solid transparent;
+    border-top: 130px solid #ff3366;
+    border-bottom: 0 solid transparent;
+    transform-origin: top;
+    transition: transform 0.5s ease 0.3s, z-index 0.2s ease 0.3s;
+    z-index: 4;
+}
+
+/* Bolsillo del sobre */
+.pocket {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 0;
+    height: 0;
+    border-left: 190px solid #e01b4c;
+    border-right: 190px solid #e01b4c;
+    border-top: 125px solid transparent;
+    border-bottom: 125px solid #e01b4c;
+    border-radius: 0 0 8px 8px;
+    z-index: 3;
+}
+
+/* La carta física interna */
+.letter {
+    position: absolute;
+    bottom: 10px;
+    left: 15px;
+    width: 350px;
+    height: 220px;
+    background-color: #fffdf5; /* Blanco crema */
+    border-radius: 4px;
+    padding: 20px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1) 0s, height 0.6s cubic-bezier(0.25, 1, 0.5, 1) 0s;
+    z-index: 2;
+    overflow: hidden;
+}
+
+.letter-inner {
+    color: #2c2523;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    padding-right: 5px;
+}
+
+/* Personalizar barra de scroll de la carta */
+.letter-inner::-webkit-scrollbar {
+    width: 4px;
+}
+.letter-inner::-webkit-scrollbar-thumb {
+    background: #ff5eb4;
+    border-radius: 4px;
+}
+
+.letter-title {
+    font-family: var(--font-cursive);
+    font-size: 1.8rem;
+    color: #b3103e;
+    margin-bottom: 10px;
+    border-bottom: 1px dashed rgba(179, 16, 62, 0.2);
+    padding-bottom: 5px;
+}
+
+.letter-body {
+    font-size: 1rem;
+    line-height: 1.6;
+    font-weight: 400;
+    color: #4a3e3d;
+    white-space: pre-wrap; /* Respeta los saltos de línea */
+}
+
+.typewriter-text {
+    font-family: var(--font-body);
+}
+
+.envelope-hint {
+    position: absolute;
+    bottom: -45px;
+    width: 100%;
+    text-align: center;
+    font-size: 0.95rem;
+    color: var(--text-white);
+    text-shadow: var(--neon-pink-glow);
+    animation: pulseIcon 1.5s infinite;
+}
+
+/* Animaciones del sobre al abrirse */
+.envelope-wrapper.open {
+    transform: translateY(60px);
+}
+
+.envelope-wrapper.open .flap {
+    transform: rotateX(180deg);
+    z-index: 1;
+    transition: transform 0.5s ease, z-index 0.2s ease 0.2s;
+}
+
+.envelope-wrapper.open .letter {
+    transform: translateY(-200px);
+    height: 380px;
+    z-index: 5;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6);
+    transition: transform 0.7s cubic-bezier(0.25, 1, 0.5, 1) 0.4s, height 0.7s cubic-bezier(0.25, 1, 0.5, 1) 0.4s;
+}
+
+/* ==========================================================================
+   SECCIÓN 4: DETALLE ESPECIAL (CORAZÓN INTERACTIVO GIGANTE)
+   ========================================================================== */
+.surprise-container {
+    text-align: center;
+    background: var(--glass-bg);
+    border: var(--glass-border);
+    box-shadow: var(--glass-shadow);
+    border-radius: 24px;
+    padding: 50px 20px;
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+}
+
+.big-interactive-heart-container {
+    margin: 40px auto;
+    position: relative;
+    width: 180px;
+    height: 180px;
+}
+
+.big-heart-btn {
+    width: 100%;
+    height: 100%;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    outline: none;
+}
+
+.heart-shape {
+    font-size: 8rem;
+    position: relative;
+    z-index: 3;
+    transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    filter: drop-shadow(0 0 10px rgba(255, 42, 95, 0.5));
+}
+
+.heart-pulse-glow {
+    position: absolute;
+    width: 120px;
+    height: 120px;
+    background: rgba(255, 42, 95, 0.35);
+    border-radius: 50%;
+    filter: blur(15px);
+    z-index: 1;
+    animation: growGlow 1.5s infinite cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+.big-heart-btn:hover .heart-shape {
+    transform: scale(1.18);
+    filter: drop-shadow(0 0 20px rgba(255, 42, 95, 0.9));
+}
+
+.big-heart-btn:active .heart-shape {
+    transform: scale(0.9);
+}
+
+/* Animación de click y explosión */
+.big-heart-btn.exploded .heart-shape {
+    animation: heartPop 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+/* Caja de sorpresa */
+.special-surprise-message {
+    max-width: 600px;
+    margin: 30px auto 0 auto;
+    transition: all 0.8s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+.hidden-message {
+    opacity: 0;
+    transform: translateY(30px) scale(0.9);
+    pointer-events: none;
+    max-height: 0;
+    overflow: hidden;
+}
+
+.visible-message {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    pointer-events: auto;
+    max-height: 500px;
+    margin-top: 30px;
+}
+
+.surprise-box {
+    background: rgba(255, 42, 95, 0.1);
+    border: 1px solid rgba(255, 42, 95, 0.4);
+    border-radius: 20px;
+    padding: 30px 25px;
+    box-shadow: inset 0 0 20px rgba(255, 42, 95, 0.1), var(--neon-red-glow);
+    animation: boxReveal 0.6s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+}
+
+.surprise-highlight-text {
+    font-family: var(--font-heading);
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: #fff;
+    text-shadow: var(--neon-pink-glow);
+    margin-bottom: 15px;
+}
+
+.surprise-subtext {
+    font-size: 1.05rem;
+    line-height: 1.6;
+    color: var(--text-white);
+    font-weight: 300;
+}
+
+.confetti-sparkles-container {
+    font-size: 1.3rem;
+    margin-top: 20px;
+    animation: floatY 3s infinite ease-in-out;
+}
+
+/* ==========================================================================
+   FOOTER
+   ========================================================================== */
+.love-footer {
+    text-align: center;
+    padding: 60px 20px 40px 20px;
+    font-size: 0.95rem;
+    color: var(--text-muted);
+    font-weight: 300;
+    border-top: 1px solid rgba(255, 42, 95, 0.1);
+    margin-top: 50px;
+}
+
+.footer-copy {
+    font-size: 0.75rem;
+    margin-top: 8px;
+    letter-spacing: 1px;
+}
+
+/* ==========================================================================
+   ANIMACIONES KEYFRAMES
+   ========================================================================== */
+@keyframes fadeInIntro {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes pulseHeart {
+    from { transform: scale(1); }
+    to { transform: scale(1.15); }
+}
+
+@keyframes pulseIcon {
+    0% { transform: scale(1); }
+    100% { transform: scale(1.2); }
+}
+
+@keyframes neonPulse {
+    from {
+        stroke-width: 1.5;
+        filter: drop-shadow(0 0 8px rgba(255, 42, 95, 0.6));
+    }
+    to {
+        stroke-width: 2.2;
+        filter: drop-shadow(0 0 25px rgba(255, 42, 95, 0.9));
+    }
+}
+
+@keyframes heartBeatTxt {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.25); }
+}
+
+@keyframes floatY {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-12px); }
+}
+
+@keyframes growGlow {
+    0% { transform: scale(0.8); opacity: 0.8; }
+    100% { transform: scale(1.6); opacity: 0; }
+}
+
+@keyframes bounceWave {
+    from { transform: scaleY(0.2); }
+    to { transform: scaleY(1); }
+}
+
+@keyframes heartPop {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.4); }
+    100% { transform: scale(1); }
+}
+
+@keyframes boxReveal {
+    from { opacity: 0; transform: scale(0.85) translateY(20px); }
+    to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+/* ==========================================================================
+   DISEÑO ADAPTATIVO (RESPONSIVE DESIGN)
+   ========================================================================== */
+
+/* Tablet y dispositivos medianos */
+@media (max-width: 768px) {
+    .intro-title {
+        font-size: 2.3rem;
+    }
+    .main-title {
+        font-size: 2.2rem;
+    }
+    .neon-heart-container {
+        width: 240px;
+        height: 240px;
+    }
+    .section-title {
+        font-size: 1.9rem;
+    }
+    .polaroid-grid {
+        grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+        gap: 25px;
+    }
+    .floating-badge {
+        font-size: 0.8rem;
+        padding: 8px 14px;
+    }
+    .b1 { left: -2%; top: 15%; }
+    .b2 { right: -2%; top: 28%; }
+    .b3 { left: -3%; top: 48%; }
+    .b4 { right: -3%; top: 62%; }
+    .b5 { left: -2%; top: 80%; }
+    .b6 { right: -2%; top: 92%; }
+}
+
+/* Móvil / Teléfonos pequeños (Optimización crítica) */
+@media (max-width: 480px) {
+    .intro-title {
+        font-size: 1.85rem;
+    }
+    .intro-subtitle {
+        font-size: 1rem;
+        margin-bottom: 30px;
+    }
+    .btn-start-neon {
+        padding: 12px 30px;
+        font-size: 1rem;
+    }
+    .main-content {
+        padding: 20px 12px 80px 12px;
+    }
+    .birthday-card {
+        padding: 35px 15px;
+    }
+    .main-title {
+        font-size: 1.7rem;
+        margin-bottom: 20px;
+    }
+    .neon-heart-container {
+        width: 200px;
+        height: 200px;
+    }
+    .neon-heart-text p {
+        font-size: 1.25rem;
+    }
+    .dedication-text {
+        font-size: 1.05rem;
+        line-height: 1.6;
+    }
+    .signature .sender {
+        font-size: 1.8rem;
+    }
+    .section {
+        padding: 50px 0;
+    }
+    .section-title {
+        font-size: 1.6rem;
+    }
+    .section-subtitle {
+        font-size: 0.9rem;
+        margin-bottom: 30px;
+    }
+    /* En móviles removemos la solapa flotante lateral agresiva y distribuimos mejor */
+    .floating-badge {
+        display: inline-block;
+        position: relative;
+        margin: 5px;
+        top: auto !important;
+        left: auto !important;
+        right: auto !important;
+        animation: none !important; /* Desactivar flotación pesada */
+    }
+    #floating-badges-container {
+        position: relative;
+        width: 100%;
+        height: auto;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        margin: 20px 0;
+        pointer-events: auto;
+    }
+    /* Ajustes del sobre en pantallas móviles */
+    .envelope-wrapper {
+        width: 100%;
+        max-width: 320px;
+        height: 210px;
+    }
+    .flap {
+        border-left-width: 160px;
+        border-right-width: 160px;
+        border-top-width: 110px;
+    }
+    .pocket {
+        border-left-width: 160px;
+        border-right-width: 160px;
+        border-top-width: 105px;
+        border-bottom-width: 105px;
+    }
+    .letter {
+        width: 290px;
+        height: 180px;
+        left: 15px;
+    }
+    .envelope-wrapper.open .letter {
+        transform: translateY(-160px);
+        height: 320px;
+    }
+    .letter-title {
+        font-size: 1.45rem;
+    }
+    .letter-body {
+        font-size: 0.9rem;
+    }
+    /* Detalle especial móvil */
+    .heart-shape {
+        font-size: 6.5rem;
+    }
+    .surprise-highlight-text {
+        font-size: 1.3rem;
+    }
+    .surprise-subtext {
+        font-size: 0.95rem;
+    }
+    .music-player {
+        bottom: 15px;
+        right: 15px;
+    }
+    .btn-music {
+        width: 44px;
+        height: 44px;
+    }
+}
