@@ -238,9 +238,9 @@ function create3DParticleHeart() {
     if (heartInstancedMesh.instanceColor) heartInstancedMesh.instanceColor.needsUpdate = true;
     heartGroup.add(heartInstancedMesh);
 
-    // Título 3D Principal en Neón Rojo resplandeciente
+    // Título 3D Principal en Neón Rojo resplandeciente (Elevado a Y=285 para no chocar con el corazón)
     titleSprite = createTextSprite("¡FELIZ CUMPLEAÑOS!\nPABLO! 🎉", 62, "#ff2a5f", "#ff0044");
-    titleSprite.position.set(0, 195, 0);
+    titleSprite.position.set(0, 285, 0);
     titleSprite.material.opacity = 0; // Oculto al inicio durante la construcción
     heartGroup.add(titleSprite);
 
