@@ -7,7 +7,7 @@
    -------------------------------------------------------------------------- */
 const CONFIG = {
     // Nombre y Subtítulo del cumpleañero
-    NOMBRE_AMIGO: "MÁQUINA",
+    NOMBRE_AMIGO: "PABLO",
     SUBTITULO: "El mejor bro de todos 🔥",
 
     // Cantidad de elementos flotantes en espacio 3D
@@ -27,6 +27,10 @@ const CONFIG = {
     // Categorías de Frases de Amistad y Chacota
     LISTA_DE_FRASES: [
         // --- FELICITACIONES ---
+        "¡Feliz cumpleaños, Pablo! 🎉",
+        "Feliz cumpleaños Pablo 🔥",
+        "¡Felicidades Pablo! 🥳",
+        "Feliz cumple Pablo 🎂",
         "Feliz cumple perri 🔥",
         "¡Feliz cumpleaños perri! 🎹",
         "Feliz cumpleaños, hermano 🎉",
@@ -209,25 +213,40 @@ function createCentral3DCake() {
     topTier.position.y = 40;
     centralCakeGroup.add(topTier);
 
-    // Velas Neón y Fuego
-    const candlePositions = [
-        { x: -30, z: -30 }, { x: 30, z: -30 },
-        { x: -30, z: 30 },  { x: 30, z: 30 },
-        { x: 0, z: 0 }
-    ];
+    // Generar exactamente 20 Velas Neón y Fuego sobre el pastel
+    const candlePositions = [];
+    
+    // Anillo exterior de 12 velas (radio 50)
+    for (let i = 0; i < 12; i++) {
+        const angle = (i / 12) * Math.PI * 2;
+        candlePositions.push({ x: Math.cos(angle) * 50, z: Math.sin(angle) * 50 });
+    }
+    // Anillo interior de 7 velas (radio 26)
+    for (let i = 0; i < 7; i++) {
+        const angle = (i / 7) * Math.PI * 2 + 0.3;
+        candlePositions.push({ x: Math.cos(angle) * 26, z: Math.sin(angle) * 26 });
+    }
+    // 1 vela central (centro exacto)
+    candlePositions.push({ x: 0, z: 0 }); // Total: 12 + 7 + 1 = 20 velas
 
     candlePositions.forEach(pos => {
         // Vela
-        const candle = new THREE.Mesh(new THREE.CylinderGeometry(4, 4, 30, 16), matGold);
-        candle.position.set(pos.x, 75, pos.z);
+        const candle = new THREE.Mesh(new THREE.CylinderGeometry(2.5, 2.5, 25, 12), matGold);
+        candle.position.set(pos.x, 72.5, pos.z);
         centralCakeGroup.add(candle);
 
         // Llama de fuego brillante
-        const flame = new THREE.Mesh(new THREE.SphereGeometry(6, 16, 16), matFlame);
-        flame.position.set(pos.x, 93, pos.z);
+        const flame = new THREE.Mesh(new THREE.SphereGeometry(4.5, 12, 12), matFlame);
+        flame.position.set(pos.x, 88, pos.z);
         flame.scale.set(1, 1.6, 1);
         centralCakeGroup.add(flame);
     });
+
+    // Texto 3D Principal en Neón flotando directamente sobre el pastel
+    const titleSprite = createTextSprite("¡FELIZ CUMPLEAÑOS, PABLO! 🎉", 55, "#ffffff", "#ffd700");
+    titleSprite.position.set(0, 140, 0);
+    titleSprite.scale.set(550, 120, 1);
+    centralCakeGroup.add(titleSprite);
 
     // Anillo de Luz Orbital Neón al rededor del pastel
     const ringGeo = new THREE.TorusGeometry(190, 3, 16, 100);
