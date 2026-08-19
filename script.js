@@ -27,6 +27,8 @@ const CONFIG = {
     // Categorías de Frases de Amistad y Chacota
     LISTA_DE_FRASES: [
         // --- FELICITACIONES ---
+        "Feliz cumple perri 🔥",
+        "¡Feliz cumpleaños perri! 🎹",
         "Feliz cumpleaños, hermano 🎉",
         "Feliz cumple, máquina 🔥",
         "Que la pases increíble, bro",
