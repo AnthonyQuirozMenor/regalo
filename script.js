@@ -242,10 +242,9 @@ function createCentral3DCake() {
         centralCakeGroup.add(flame);
     });
 
-    // Texto 3D Principal en Neón flotando directamente sobre el pastel
-    const titleSprite = createTextSprite("¡FELIZ CUMPLEAÑOS, PABLO! 🎉", 55, "#ffffff", "#ffd700");
-    titleSprite.position.set(0, 140, 0);
-    titleSprite.scale.set(550, 120, 1);
+    // Texto 3D Principal en Neón apilado (una palabra sobre otra) flotando sobre el pastel
+    const titleSprite = createTextSprite("FELIZ\nCUMPLEAÑOS\nPABLO! 🎉", 58, "#ffffff", "#ffd700");
+    titleSprite.position.set(0, 160, 0);
     centralCakeGroup.add(titleSprite);
 
     // Anillo de Luz Orbital Neón al rededor del pastel
@@ -263,7 +262,7 @@ function createCentral3DCake() {
 
 
 /* --------------------------------------------------------------------------
-   5. CREADOR DE TEXT SPRITES EN 3D (FRASES Y EMOJIS FLOTANTES)
+   5. CREADOR DE TEXT SPRITES EN 3D (FRASES Y EMOJIS FLOTANTES DINÁMICOS)
    -------------------------------------------------------------------------- */
 function create3DTextCloud() {
     const totalItems = TOTAL_FRASES;
@@ -290,11 +289,10 @@ function create3DTextCloud() {
             fontSize = 38;
         }
 
-        // Generar Texture Sprite en Canvas 2D
+        // Generar Texture Sprite en Canvas 2D sin recortes
         const sprite = createTextSprite(textContent, fontSize, fontColor, glowColor);
 
         // Distribuir en Espacio 3D (Coordenadas X, Y, Z)
-        // Usamos una distribución esférica/cúbica profunda para máxima sensación 3D
         const radius = Math.random() * 1400 + 350;
         const theta = Math.random() * Math.PI * 2;
         const phi = Math.acos((Math.random() * 2) - 1);
@@ -320,30 +318,51 @@ function create3DTextCloud() {
     }
 }
 
-// Función Auxiliar: Convierte Texto a Canvas Texture para Three.js Sprite
+// Función Auxiliar: Convierte Texto a Canvas Texture sin recortes (multilínea dinámica)
 function createTextSprite(text, fontSize, fontColor, glowColor) {
+    const lines = text.split('\n');
+
+    // Medición exacta de dimensiones de texto
+    const tempCanvas = document.createElement('canvas');
+    const tempCtx = tempCanvas.getContext('2d');
+    tempCtx.font = `900 ${fontSize}px 'Outfit', sans-serif`;
+
+    let maxLineWidth = 0;
+    lines.forEach(line => {
+        const w = tempCtx.measureText(line).width;
+        if (w > maxLineWidth) maxLineWidth = w;
+    });
+
+    const paddingX = 140; // Margen para evitar recortes del resplandor neón
+    const lineHeight = fontSize * 1.35;
+
     const canvas = document.createElement('canvas');
     const ctx = canvas.getContext('2d');
 
-    // Configurar canvas HD
-    canvas.width = 600;
-    canvas.height = 140;
+    canvas.width = Math.max(Math.ceil(maxLineWidth + paddingX), 240);
+    canvas.height = Math.max(Math.ceil(lines.length * lineHeight + 60), 120);
 
     ctx.font = `900 ${fontSize}px 'Outfit', sans-serif`;
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
 
-    // Resplandor Neón
-    ctx.shadowColor = glowColor;
-    ctx.shadowBlur = 20;
-    ctx.fillStyle = fontColor;
-    ctx.fillText(text, canvas.width / 2, canvas.height / 2);
+    const startY = (canvas.height - (lines.length - 1) * lineHeight) / 2;
 
-    // Segunda capa para intensificar el neón
-    ctx.shadowBlur = 8;
-    ctx.fillText(text, canvas.width / 2, canvas.height / 2);
+    lines.forEach((line, index) => {
+        const y = startY + index * lineHeight;
 
-    // Crear Textura Three.js
+        // Capa 1: Resplandor Neón exterior
+        ctx.shadowColor = glowColor;
+        ctx.shadowBlur = 24;
+        ctx.fillStyle = fontColor;
+        ctx.fillText(line, canvas.width / 2, y);
+
+        // Capa 2: Centro brillante
+        ctx.shadowBlur = 8;
+        ctx.fillText(line, canvas.width / 2, y);
+    });
+
+    // Crear Textura 3D
     const texture = new THREE.CanvasTexture(canvas);
     texture.minFilter = THREE.LinearFilter;
 
@@ -354,9 +373,11 @@ function createTextSprite(text, fontSize, fontColor, glowColor) {
     });
 
     const sprite = new THREE.Sprite(spriteMaterial);
-    // Escalar sprite proporcionalmente
-    const scaleFactor = fontSize > 50 ? 1.4 : 1.0;
-    sprite.scale.set(300 * scaleFactor, 70 * scaleFactor, 1);
+    
+    // Escalar sprite proporcionalmente en el espacio 3D para cero distorsión
+    const aspect = canvas.width / canvas.height;
+    const baseHeight = lines.length > 1 ? fontSize * 1.6 * lines.length : fontSize * 1.8;
+    sprite.scale.set(baseHeight * aspect, baseHeight, 1);
 
     return sprite;
 }
