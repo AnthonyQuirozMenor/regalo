@@ -242,12 +242,12 @@ function create3DParticleHeart() {
 
         let hx = 16 * Math.pow(Math.sin(t), 3);
         let hy = (13 * Math.cos(t) - 5 * Math.cos(2 * t) - 2 * Math.cos(3 * t) - Math.cos(4 * t));
-        let hz = 8 * Math.sin(t) * Math.sin(v);
+        let hz = 4 * Math.sin(t) * Math.sin(v); // Menor dispersión Z para estrellas bien juntitas
 
-        // Estructura de ESTRELLAS: 85% marco exterior nítido, 15% destellos de estrellas flotantes
+        // Estrellas súper apretadas y nítidas formando el trazo denso del corazón
         const scale = 14.5;
-        const isDust = Math.random() < 0.15;
-        const thicknessFactor = isDust ? (1.08 + Math.random() * 0.22) : (0.88 + Math.random() * 0.22);
+        const isDust = Math.random() < 0.08;
+        const thicknessFactor = isDust ? (1.04 + Math.random() * 0.10) : (0.95 + Math.random() * 0.08);
         
         const targetX = hx * scale * thicknessFactor;
         const targetY = hy * scale * thicknessFactor + 30; // Apoyado sobre la nube
