@@ -198,7 +198,7 @@ function create3DParticleHeart() {
     ];
 
     for (let i = 0; i < heartParticleCount; i++) {
-        // Ecuación paramétrica cardioide de precisión 3D
+        // Ecuación paramétrica de corazón 3D emblemático de precisión
         const t = Math.random() * Math.PI * 2;
         const v = (Math.random() - 0.5) * Math.PI;
 
@@ -206,19 +206,22 @@ function create3DParticleHeart() {
         let hy = (13 * Math.cos(t) - 5 * Math.cos(2 * t) - 2 * Math.cos(3 * t) - Math.cos(4 * t));
         let hz = 8 * Math.sin(t) * Math.sin(v);
 
-        // Las partículas crean ÚNICAMENTE el marco denso y el contorno exterior del corazón,
-        // dejando el centro completamente vacío y transparente al fondo espacial.
+        // Estructura volumétrica: 85% marco exterior nítido, 15% destellos de polvo estelar
         const scale = 14.5;
-        const thicknessFactor = 0.84 + Math.random() * 0.30;
+        const isDust = Math.random() < 0.15;
+        const thicknessFactor = isDust ? (1.08 + Math.random() * 0.22) : (0.88 + Math.random() * 0.22);
         
         const targetX = hx * scale * thicknessFactor;
-        const targetY = hy * scale * thicknessFactor + 20; // Ajustar Y del corazón para más espacio libre
+        const targetY = hy * scale * thicknessFactor - 15; // Mayor espacio de separación vertical
         const targetZ = hz * scale * thicknessFactor;
 
         // Asignar color 100% rojo puro neón a todas las bolitas
         const chosenRed = pureRedPalette[Math.floor(Math.random() * pureRedPalette.length)];
         color.copy(chosenRed);
         heartInstancedMesh.setColorAt(i, color);
+
+        // Variación dinámica de escala de partículas (polvo fino y destellos principales)
+        const pScale = isDust ? (Math.random() * 0.4 + 0.5) : (Math.random() * 0.7 + 0.85);
 
         // Posición inicial: Dispersas ampliamente en el espacio profundo
         const startX = (Math.random() - 0.5) * 4500;
@@ -229,6 +232,7 @@ function create3DParticleHeart() {
         heartTargetPositions.push(new THREE.Vector3(targetX, targetY, targetZ));
 
         dummy.position.set(startX, startY, startZ);
+        dummy.scale.set(pScale, pScale, pScale);
         dummy.updateMatrix();
         heartInstancedMesh.setMatrixAt(i, dummy.matrix);
     }
@@ -237,9 +241,9 @@ function create3DParticleHeart() {
     if (heartInstancedMesh.instanceColor) heartInstancedMesh.instanceColor.needsUpdate = true;
     heartGroup.add(heartInstancedMesh);
 
-    // Título 3D Principal en Neón Rojo (Elevado a Y=390 para máxima separación y cero colisiones)
-    titleSprite = createTextSprite("¡FELIZ CUMPLEAÑOS!\nPABLO! 🎉", 60, "#ff0033", "#ff0000");
-    titleSprite.position.set(0, 390, 0);
+    // Título 3D Principal en Neón Rojo que dice SOLO "¡FELIZ CUMPLEAÑOS!" elevado a Y=460
+    titleSprite = createTextSprite("¡FELIZ CUMPLEAÑOS! 🎉", 65, "#ff0033", "#ff0000");
+    titleSprite.position.set(0, 460, 0);
     titleSprite.material.opacity = 0; // Oculto al inicio durante la construcción
     heartGroup.add(titleSprite);
 
