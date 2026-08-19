@@ -167,7 +167,7 @@ function initThreeEngine() {
    4. CREACIÓN DEL CORAZÓN 3D DE BOLITAS ROJAS Y ANIMACIÓN DE CONSTRUCCIÓN
    -------------------------------------------------------------------------- */
 let heartGroup, heartInstancedMesh;
-let heartParticleCount = isMobile ? 1200 : 2200;
+let heartParticleCount = isMobile ? 3500 : 7000;
 let heartStartPositions = [];
 let heartTargetPositions = [];
 let isHeartAssembled = false;
@@ -176,41 +176,56 @@ let titleSprite;
 function create3DParticleHeart() {
     heartGroup = new THREE.Group();
 
-    // Geometría y material neón carmesí para las bolitas rojas
-    const sphereGeo = new THREE.SphereGeometry(3.5, 10, 10);
-    const sphereMat = new THREE.MeshStandardMaterial({
-        color: 0xff0033,
-        emissive: 0xff0044,
-        emissiveIntensity: 0.95,
-        roughness: 0.2,
-        metalness: 0.4
+    // Geometría y material de partículas volumétricas con color de vértice
+    const particleGeo = new THREE.SphereGeometry(2.8, 8, 8);
+    const particleMat = new THREE.MeshStandardMaterial({
+        roughness: 0.1,
+        metalness: 0.3,
+        emissiveIntensity: 0.95
     });
 
-    heartInstancedMesh = new THREE.InstancedMesh(sphereGeo, sphereMat, heartParticleCount);
+    heartInstancedMesh = new THREE.InstancedMesh(particleGeo, particleMat, heartParticleCount);
     
     const dummy = new THREE.Object3D();
+    const color = new THREE.Color();
+
+    // Paleta de colores multicolor neón profunda (Rojo, Rosa, Púrpura, Azul)
+    const colorPalette = [
+        new THREE.Color(0xff0044), // Rojo Neón Carmesí
+        new THREE.Color(0xff0088), // Rosa Neón Vivo
+        new THREE.Color(0xaa00ff), // Púrpura Eléctrico
+        new THREE.Color(0x0066ff), // Azul Espacial
+        new THREE.Color(0x00f0ff)  // Cian Neón Accent
+    ];
 
     for (let i = 0; i < heartParticleCount; i++) {
-        // Ecuación paramétrica para el contorno exterior neón del corazón (Línea hueca como la referencia)
+        // Ecuación paramétrica cardioide de precisión 3D
         const t = Math.random() * Math.PI * 2;
         const v = (Math.random() - 0.5) * Math.PI;
 
         let hx = 16 * Math.pow(Math.sin(t), 3);
         let hy = (13 * Math.cos(t) - 5 * Math.cos(2 * t) - 2 * Math.cos(3 * t) - Math.cos(4 * t));
-        let hz = 6 * Math.sin(t) * Math.sin(v);
+        let hz = 8 * Math.sin(t) * Math.sin(v);
 
-        // Concentrar el 95% de las bolitas estrictamente en el contorno/trazo exterior (borde hueco)
-        const scale = 14;
-        const outlineFactor = Math.random() < 0.92 ? (0.92 + Math.random() * 0.16) : (Math.random() * 0.92);
+        // INSTRUCCIÓN CRUCIAL: Las partículas crean ÚNICAMENTE la masa densa y el contorno exterior del corazón,
+        // dejando el centro completamente vacío y transparente al fondo espacial.
+        // Espesor del trazo hueco: entre 0.82 y 1.15
+        const scale = 14.5;
+        const thicknessFactor = 0.84 + Math.random() * 0.30;
         
-        const targetX = hx * scale * outlineFactor;
-        const targetY = hy * scale * outlineFactor + 35;
-        const targetZ = hz * scale * outlineFactor;
+        const targetX = hx * scale * thicknessFactor;
+        const targetY = hy * scale * thicknessFactor + 35;
+        const targetZ = hz * scale * thicknessFactor;
 
-        // Posición inicial: Dispersas en el espacio lejano
-        const startX = (Math.random() - 0.5) * 4000;
-        const startY = (Math.random() - 0.5) * 4000;
-        const startZ = (Math.random() - 0.5) * 4000;
+        // Asignar color gradiente neón multicolor según la posición y azar
+        const c1 = colorPalette[Math.floor(Math.random() * colorPalette.length)];
+        color.copy(c1);
+        heartInstancedMesh.setColorAt(i, color);
+
+        // Posición inicial: Dispersas ampliamente en el espacio profundo
+        const startX = (Math.random() - 0.5) * 4500;
+        const startY = (Math.random() - 0.5) * 4500;
+        const startZ = (Math.random() - 0.5) * 4500;
 
         heartStartPositions.push(new THREE.Vector3(startX, startY, startZ));
         heartTargetPositions.push(new THREE.Vector3(targetX, targetY, targetZ));
@@ -221,17 +236,18 @@ function create3DParticleHeart() {
     }
 
     heartInstancedMesh.instanceMatrix.needsUpdate = true;
+    if (heartInstancedMesh.instanceColor) heartInstancedMesh.instanceColor.needsUpdate = true;
     heartGroup.add(heartInstancedMesh);
 
-    // Título 3D Principal en Neón Rojo idéntico a la imagen ("¡FELIZ CUMPLEAÑOS!\nPABLO! 🎉")
-    titleSprite = createTextSprite("¡FELIZ CUMPLEAÑOS!\nPABLO! 🎉", 62, "#ff2a5f", "#ff0033");
+    // Título 3D Principal en Neón Rojo resplandeciente
+    titleSprite = createTextSprite("¡FELIZ CUMPLEAÑOS!\nPABLO! 🎉", 62, "#ff2a5f", "#ff0044");
     titleSprite.position.set(0, 195, 0);
     titleSprite.material.opacity = 0; // Oculto al inicio durante la construcción
     heartGroup.add(titleSprite);
 
-    // Anillo de Luz Orbital Neón Rojo en la base (idéntico al de la imagen)
-    const ringGeo = new THREE.TorusGeometry(200, 4, 16, 100);
-    const ringMat = new THREE.MeshBasicMaterial({ color: 0xff0044, transparent: true, opacity: 0 });
+    // Anillo de Luz Orbital Neón en la base
+    const ringGeo = new THREE.TorusGeometry(210, 4, 16, 100);
+    const ringMat = new THREE.MeshBasicMaterial({ color: 0xff0066, transparent: true, opacity: 0 });
     const ringMesh = new THREE.Mesh(ringGeo, ringMat);
     ringMesh.name = "glowRing";
     ringMesh.rotation.x = Math.PI / 2 + 0.1;
