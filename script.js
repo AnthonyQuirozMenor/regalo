@@ -6,8 +6,7 @@
    1. CONFIGURACIÓN EDICIÓN AMIGO (Personaliza todo fácilmente aquí)
    -------------------------------------------------------------------------- */
 const CONFIG = {
-    // Nombre y Subtítulo del cumpleañero
-    NOMBRE_AMIGO: "PABLO",
+    // Subtítulo del cumpleañero
     SUBTITULO: "El mejor bro de todos 🔥",
 
     // Cantidad de elementos flotantes en espacio 3D
@@ -27,10 +26,10 @@ const CONFIG = {
     // Categorías de Frases de Amistad y Chacota
     LISTA_DE_FRASES: [
         // --- FELICITACIONES ---
-        "¡Feliz cumpleaños, Pablo! 🎉",
-        "Feliz cumpleaños Pablo 🔥",
-        "¡Felicidades Pablo! 🥳",
-        "Feliz cumple Pablo 🎂",
+        "¡Feliz cumpleaños! 🎉",
+        "Feliz cumpleaños 🔥",
+        "¡Felicidades! 🥳",
+        "Feliz cumple 🎂",
         "Feliz cumple perri 🔥",
         "¡Feliz cumpleaños perri! 🎹",
         "Feliz cumpleaños, hermano 🎉",
