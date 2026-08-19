@@ -133,21 +133,21 @@ function initThreeEngine() {
     renderer.toneMappingExposure = 1.2;
     container.appendChild(renderer.domElement);
 
-    // 4. Luces Neón 3D
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.7);
+    // 4. Luces Neón 3D con Aura Roja Central
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
     scene.add(ambientLight);
 
-    const cyanPointLight = new THREE.PointLight(0x00f0ff, 3, 1200);
+    const redCenterLight = new THREE.PointLight(0xff0044, 8, 1600);
+    redCenterLight.position.set(0, 0, 0);
+    scene.add(redCenterLight);
+
+    const cyanPointLight = new THREE.PointLight(0x00f0ff, 2.5, 1200);
     cyanPointLight.position.set(-400, 300, 400);
     scene.add(cyanPointLight);
 
-    const goldPointLight = new THREE.PointLight(0xffd700, 4, 1500);
+    const goldPointLight = new THREE.PointLight(0xffd700, 3, 1500);
     goldPointLight.position.set(400, -200, 500);
     scene.add(goldPointLight);
-
-    const magentaPointLight = new THREE.PointLight(0xff0055, 3, 1000);
-    magentaPointLight.position.set(0, 500, -300);
-    scene.add(magentaPointLight);
 
     // 5. Crear Corazón 3D de miles de bolitas rojas (Construcción en 5 segundos)
     create3DParticleHeart();
@@ -181,7 +181,7 @@ function create3DParticleHeart() {
     const sphereMat = new THREE.MeshStandardMaterial({
         color: 0xff0033,
         emissive: 0xff0044,
-        emissiveIntensity: 0.9,
+        emissiveIntensity: 0.95,
         roughness: 0.2,
         metalness: 0.4
     });
@@ -223,15 +223,15 @@ function create3DParticleHeart() {
     heartInstancedMesh.instanceMatrix.needsUpdate = true;
     heartGroup.add(heartInstancedMesh);
 
-    // Título 3D Principal en Neón apilado ("FELIZ\nCUMPLEAÑOS\nPABLO! 🎉")
-    titleSprite = createTextSprite("FELIZ\nCUMPLEAÑOS\nPABLO! 🎉", 58, "#ffffff", "#ff0044");
-    titleSprite.position.set(0, 180, 0);
+    // Título 3D Principal en Neón Rojo según la referencia visual
+    titleSprite = createTextSprite("¡FELIZ CUMPLEAÑOS!\nPABLO! 🎉", 60, "#ff3366", "#ff0033");
+    titleSprite.position.set(0, 185, 0);
     titleSprite.material.opacity = 0; // Oculto al inicio durante la construcción
     heartGroup.add(titleSprite);
 
-    // Anillo de Luz Orbital Neón alrededor del corazón
-    const ringGeo = new THREE.TorusGeometry(210, 3, 16, 100);
-    const ringMat = new THREE.MeshBasicMaterial({ color: 0xff0055, transparent: true, opacity: 0 });
+    // Anillo de Luz Orbital Neón Rojo alrededor del corazón
+    const ringGeo = new THREE.TorusGeometry(210, 3.5, 16, 100);
+    const ringMat = new THREE.MeshBasicMaterial({ color: 0xff0044, transparent: true, opacity: 0 });
     const ringMesh = new THREE.Mesh(ringGeo, ringMat);
     ringMesh.name = "glowRing";
     ringMesh.rotation.x = Math.PI / 2;
