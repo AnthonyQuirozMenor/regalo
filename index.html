@@ -21,11 +21,6 @@
 
     <!-- Interfaz de Usuario Overlay (HUD Directo) -->
     <div id="ui-hud" class="ui-hud">
-        <!-- Pista Interactiva Inferior -->
-        <div class="hud-hint">
-            <i class="fa-solid fa-hand-pointer"></i> Mueve la pantalla para explorar el espacio 3D • ¡Toca el pastel central para detonar la fiesta! 🎂
-        </div>
-
         <!-- Control de Música Flotante -->
         <div class="music-controller">
             <button id="btn-music-toggle" class="btn-hud-icon" aria-label="Controlar Música">
@@ -34,8 +29,8 @@
         </div>
     </div>
 
-    <!-- Elemento Audio apuntando a audio/music.mp3 -->
-    <audio id="bg-music" loop preload="auto">
+    <!-- Elemento Audio apuntando a audio/music.mp3 con Autoplay inmediato -->
+    <audio id="bg-music" autoplay loop preload="auto" playsinline>
         <source src="audio/music.mp3" type="audio/mpeg">
         <source src="audio/feliz_cumple_perri.mp3" type="audio/mpeg">
         <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg">

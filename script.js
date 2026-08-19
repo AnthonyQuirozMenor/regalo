@@ -594,18 +594,24 @@ function setupEvents() {
         }
     }
 
-    // Intentar reproducción directa
+    // Intentar reproducción directa de audio
     startMusic();
 
-    // Intentar reproducción en la primera interacción si el navegador requería gesto del usuario
+    // Iniciar audio en el primer movimiento de ratón, touch o click si el navegador requirió gesto del usuario
     const firstInteractionHandler = () => {
         startMusic();
         window.removeEventListener('pointerdown', firstInteractionHandler);
         window.removeEventListener('touchstart', firstInteractionHandler);
+        window.removeEventListener('pointermove', firstInteractionHandler);
+        window.removeEventListener('mousemove', firstInteractionHandler);
+        window.removeEventListener('scroll', firstInteractionHandler);
         window.removeEventListener('keydown', firstInteractionHandler);
     };
     window.addEventListener('pointerdown', firstInteractionHandler);
     window.addEventListener('touchstart', firstInteractionHandler);
+    window.addEventListener('pointermove', firstInteractionHandler);
+    window.addEventListener('mousemove', firstInteractionHandler);
+    window.addEventListener('scroll', firstInteractionHandler);
     window.addEventListener('keydown', firstInteractionHandler);
 
     // Botón de Mute/Play Música

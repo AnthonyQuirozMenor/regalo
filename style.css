@@ -72,27 +72,6 @@ html, body {
     opacity: 0;
 }
 
-/* Indicador de ayuda inferior */
-.hud-hint {
-    align-self: center;
-    background: rgba(0, 0, 0, 0.7);
-    border: 1px solid rgba(0, 240, 255, 0.4);
-    border-radius: 30px;
-    padding: 10px 22px;
-    font-size: 0.85rem;
-    color: #ffffff;
-    letter-spacing: 1px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
-    backdrop-filter: blur(8px);
-    margin-bottom: 10px;
-    animation: pulseHint 2s infinite alternate;
-}
-
-.hud-hint i {
-    color: var(--neon-cyan);
-    margin-right: 6px;
-}
-
 /* Reproductor de música en la esquina */
 .music-controller {
     position: fixed;
