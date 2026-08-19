@@ -30,7 +30,6 @@ const CONFIG = {
         "Feliz cumple perri 🔥",
         "¡Feliz cumpleaños perri! 🎹",
         "Feliz cumpleaños, hermano 🎉",
-        "Feliz cumple, máquina 🔥",
         "Que la pases increíble, bro",
         "Un año más de vida, hermano",
         "Que cumplas muchos más 🍻",
@@ -104,11 +103,7 @@ const raycaster = new THREE.Raycaster();
 const mouseVector = new THREE.Vector2();
 
 document.addEventListener("DOMContentLoaded", () => {
-    // Aplicar variables de texto al HUD
-    document.getElementById("hud-friend-name").innerText = CONFIG.NOMBRE_AMIGO;
-    document.getElementById("hud-sub-title").innerText = CONFIG.SUBTITULO;
-
-    // Iniciar Three.js
+    // Iniciar Three.js directamente al universo 3D
     initThreeEngine();
 
     // Eventos de entrada
@@ -566,44 +561,52 @@ function setupEvents() {
         }
     });
 
-    // Botón de Ingreso (Intro Overlay)
-    const btnStart = document.getElementById("btn-start");
-    const introOverlay = document.getElementById("intro-overlay");
-    const uiHud = document.getElementById("ui-hud");
+    // Iniciar audio inmediatamente / fallback al primer clic si el navegador bloquea autoplay
     const bgMusic = document.getElementById("bg-music");
+    let isPlaying = false;
 
-    btnStart.addEventListener("click", () => {
-        // Iniciar música
-        bgMusic.play().catch(err => console.log("Autoplay bloqueado por el navegador:", err));
+    function startMusic() {
+        if (!isPlaying && bgMusic) {
+            bgMusic.play().then(() => {
+                isPlaying = true;
+                const musicIcon = document.getElementById("music-icon");
+                if (musicIcon) musicIcon.className = "fa-solid fa-volume-high";
+            }).catch(err => console.log("Esperando interacción para reproducir audio:", err));
+        }
+    }
 
-        // Transición de salida del intro
-        introOverlay.classList.add("fade-out");
-        
-        setTimeout(() => {
-            introOverlay.style.display = "none";
-            uiHud.classList.remove("hidden");
-            
-            // Disparar explosión de bienvenida
-            trigger3DExplosion(0, 0, 0, 150);
-        }, 1200);
-    });
+    // Intentar reproducción directa
+    startMusic();
+
+    // Intentar reproducción en la primera interacción si el navegador requería gesto del usuario
+    const firstInteractionHandler = () => {
+        startMusic();
+        window.removeEventListener('pointerdown', firstInteractionHandler);
+        window.removeEventListener('touchstart', firstInteractionHandler);
+        window.removeEventListener('keydown', firstInteractionHandler);
+    };
+    window.addEventListener('pointerdown', firstInteractionHandler);
+    window.addEventListener('touchstart', firstInteractionHandler);
+    window.addEventListener('keydown', firstInteractionHandler);
 
     // Botón de Mute/Play Música
     const btnMusicToggle = document.getElementById("btn-music-toggle");
     const musicIcon = document.getElementById("music-icon");
-    let isPlaying = true;
 
-    btnMusicToggle.addEventListener("click", () => {
-        if (isPlaying) {
-            bgMusic.pause();
-            musicIcon.className = "fa-solid fa-volume-xmark";
-            isPlaying = false;
-        } else {
-            bgMusic.play();
-            musicIcon.className = "fa-solid fa-volume-high";
-            isPlaying = true;
-        }
-    });
+    if (btnMusicToggle) {
+        btnMusicToggle.addEventListener("click", (e) => {
+            e.stopPropagation();
+            if (isPlaying) {
+                bgMusic.pause();
+                if (musicIcon) musicIcon.className = "fa-solid fa-volume-xmark";
+                isPlaying = false;
+            } else {
+                bgMusic.play();
+                if (musicIcon) musicIcon.className = "fa-solid fa-volume-high";
+                isPlaying = true;
+            }
+        });
+    }
 }
 
 function onWindowResize() {

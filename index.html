@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="description" content="Universo 3D de Cumpleaños interactivo para el mejor amigo. Frases flotantes, partículas, pastel neón y mucha celebración.">
-    <title>¡FELIZ CUMPLEAÑOS, BRO! 🎉 3D Experience</title>
+    <meta name="description" content="Universo 3D de Cumpleaños interactivo para el mejor amigo. Frases flotantes, partículas y pastel neón.">
+    <title>¡FELIZ CUMPLEAÑOS! 🎉 3D Experience</title>
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -19,29 +19,8 @@
     <!-- Contenedor WebGL para la escena Three.js -->
     <div id="webgl-container"></div>
 
-    <!-- Pantalla Inicial / Intro Overlay -->
-    <div id="intro-overlay" class="intro-overlay">
-        <div class="intro-box">
-            <div class="intro-badge">PARTY 3D UNIVERSE ⚡</div>
-            <h1 class="intro-title">¡FELIZ CUMPLEAÑOS! <span class="highlight-bro">HERMANO</span></h1>
-            <p class="intro-subtitle">Entrando a un espacio 3D creado especialmente para ti... 🍻</p>
-            <button id="btn-start" class="btn-start-cyber">
-                INGRESAR AL UNIVERSO <i class="fa-solid fa-rocket"></i>
-            </button>
-        </div>
-    </div>
-
-    <!-- Interfaz de Usuario Overlay (HUD) -->
-    <div id="ui-hud" class="ui-hud hidden">
-        <!-- Banner Superior -->
-        <header class="hud-header">
-            <div class="hud-title-container">
-                <span class="hud-tag">BIRTHDAY EDITION 🎉</span>
-                <h1 id="hud-main-title">¡FELIZ CUMPLEAÑOS, <span id="hud-friend-name">MÁQUINA</span>!</h1>
-                <p id="hud-sub-title">El mejor bro de todos 🔥</p>
-            </div>
-        </header>
-
+    <!-- Interfaz de Usuario Overlay (HUD Directo) -->
+    <div id="ui-hud" class="ui-hud">
         <!-- Pista Interactiva Inferior -->
         <div class="hud-hint">
             <i class="fa-solid fa-hand-pointer"></i> Mueve la pantalla para explorar el espacio 3D • ¡Toca el pastel central para detonar la fiesta! 🎂
@@ -55,10 +34,10 @@
         </div>
     </div>
 
-    <!-- Elemento Audio con la canción Feliz Cumple Perri (Damas Gratis / Cumbia) -->
+    <!-- Elemento Audio apuntando a audio/music.mp3 -->
     <audio id="bg-music" loop preload="auto">
+        <source src="audio/music.mp3" type="audio/mpeg">
         <source src="audio/feliz_cumple_perri.mp3" type="audio/mpeg">
-        <source src="audio/romantic_song.mp3" type="audio/mpeg">
         <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg">
     </audio>
 
