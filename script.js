@@ -165,7 +165,10 @@ function initThreeEngine() {
 /* --------------------------------------------------------------------------
    4. CREACIÓN DEL CORAZÓN 3D DE ESTRELLAS ROJAS SOBRE NUBE ESPONJOSA
    -------------------------------------------------------------------------- */
-let heartGroup, heartInstancedMesh;
+/* --------------------------------------------------------------------------
+   4. CREACIÓN DEL CORAZÓN 3D DE ESTRELLAS ROJAS SOBRE NUBE ESPONJOSA
+   -------------------------------------------------------------------------- */
+let heartGroup, heartPointsMesh;
 let heartParticleCount = isMobile ? 3500 : 7000;
 let heartStartPositions = [];
 let heartTargetPositions = [];
@@ -214,31 +217,26 @@ function create3DParticleHeart() {
     // 1. CREAR LA NUBE ESPONJOSA 3D EN LA BASE / PIE DEL CORAZÓN
     create3DCloudBase();
 
-    // 2. CREAR LAS ESTRELLAS ROJAS NEÓN QUE FORMAN EL CORAZÓN 3D
+    // 2. SISTEMA DE ESTRELLAS ROJAS NEÓN CON THREE.POINTS (100% ESTABLE Y SÚPER FLUIDO)
     const starTexture = createStarTexture();
-    const particleGeo = new THREE.PlaneGeometry(11, 11);
-    const particleMat = new THREE.MeshBasicMaterial({
-        map: starTexture,
-        transparent: true,
-        depthWrite: false,
-        side: THREE.DoubleSide
-    });
+    const geometry = new THREE.BufferGeometry();
 
-    heartInstancedMesh = new THREE.InstancedMesh(particleGeo, particleMat, heartParticleCount);
-    
-    const dummy = new THREE.Object3D();
-    const color = new THREE.Color();
+    const positions = new Float32Array(heartParticleCount * 3);
+    const colors = new Float32Array(heartParticleCount * 3);
 
     const pureRedPalette = [
         new THREE.Color(0xff0033), // Rojo Neón Puro
         new THREE.Color(0xff0044), // Rojo Carmesí
         new THREE.Color(0xdd002b), // Rojo Rubí
         new THREE.Color(0xff1a40), // Escarlata
-        new THREE.Color(0xffaa00)  // Destello Dorado Neón Accent
+        new THREE.Color(0xffaa00)  // Destello Dorado Accent
     ];
 
+    heartStartPositions = [];
+    heartTargetPositions = [];
+
     for (let i = 0; i < heartParticleCount; i++) {
-        // Ecuación paramétrica de corazón 3D emblemático de precisión
+        // Ecuación paramétrica de corazón 3D emblemático
         const t = Math.random() * Math.PI * 2;
         const v = (Math.random() - 0.5) * Math.PI;
 
@@ -252,16 +250,8 @@ function create3DParticleHeart() {
         const thicknessFactor = isDust ? (1.08 + Math.random() * 0.22) : (0.88 + Math.random() * 0.22);
         
         const targetX = hx * scale * thicknessFactor;
-        const targetY = hy * scale * thicknessFactor + 30; // Corazón elevado para apoyarse exactamente SOBRE la nube
+        const targetY = hy * scale * thicknessFactor + 30; // Apoyado sobre la nube
         const targetZ = hz * scale * thicknessFactor;
-
-        // Color neón para cada estrella
-        const chosenRed = pureRedPalette[Math.floor(Math.random() * pureRedPalette.length)];
-        color.copy(chosenRed);
-        heartInstancedMesh.setColorAt(i, color);
-
-        // Escala y rotación aleatoria de cada estrella
-        const pScale = isDust ? (Math.random() * 0.5 + 0.6) : (Math.random() * 0.8 + 0.9);
 
         // Posición inicial: Dispersas ampliamente en el espacio profundo
         const startX = (Math.random() - 0.5) * 4500;
@@ -271,16 +261,31 @@ function create3DParticleHeart() {
         heartStartPositions.push(new THREE.Vector3(startX, startY, startZ));
         heartTargetPositions.push(new THREE.Vector3(targetX, targetY, targetZ));
 
-        dummy.position.set(startX, startY, startZ);
-        dummy.rotation.z = Math.random() * Math.PI * 2; // Rotación variada de estrellas
-        dummy.scale.set(pScale, pScale, pScale);
-        dummy.updateMatrix();
-        heartInstancedMesh.setMatrixAt(i, dummy.matrix);
+        positions[i * 3] = startX;
+        positions[i * 3 + 1] = startY;
+        positions[i * 3 + 2] = startZ;
+
+        const chosenRed = pureRedPalette[Math.floor(Math.random() * pureRedPalette.length)];
+        colors[i * 3] = chosenRed.r;
+        colors[i * 3 + 1] = chosenRed.g;
+        colors[i * 3 + 2] = chosenRed.b;
     }
 
-    heartInstancedMesh.instanceMatrix.needsUpdate = true;
-    if (heartInstancedMesh.instanceColor) heartInstancedMesh.instanceColor.needsUpdate = true;
-    heartGroup.add(heartInstancedMesh);
+    geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+    geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+
+    const pointsMaterial = new THREE.PointsMaterial({
+        size: isMobile ? 18 : 26,
+        map: starTexture,
+        vertexColors: true,
+        transparent: true,
+        opacity: 0.95,
+        depthWrite: false,
+        blending: THREE.AdditiveBlending
+    });
+
+    heartPointsMesh = new THREE.Points(geometry, pointsMaterial);
+    heartGroup.add(heartPointsMesh);
 
     // Título 3D Principal en Neón Rojo en Y=340 (justo arriba del corazón de estrellas)
     titleSprite = createTextSprite("¡FELIZ CUMPLEAÑOS! 🎉", 65, "#ff0033", "#ff0000");
@@ -318,16 +323,14 @@ function create3DCloudBase() {
         const sphereGeo = new THREE.SphereGeometry(radius, 16, 16);
         const puff = new THREE.Mesh(sphereGeo, cloudMat);
 
-        // Nube acolchada grande y esponjosa directamente en el pie del corazón (Y = -200 a -240)
         const px = (Math.random() - 0.5) * 540;
         const py = -210 + (Math.random() - 0.5) * 45;
         const pz = (Math.random() - 0.5) * 240;
 
         puff.position.set(px, py, pz);
-        puff.scale.set(1, 0.58, 1.1); // Forma acolchada de nube real
+        puff.scale.set(1, 0.58, 1.1);
         cloudGroup.add(puff);
 
-        // Añadir halo de luz neón cian/rosa para máximo contraste visual
         if (i % 3 === 0) {
             const glowPuff = new THREE.Mesh(new THREE.SphereGeometry(radius * 1.15, 12, 12), cloudGlowMat);
             glowPuff.position.set(px, py, pz);
@@ -566,26 +569,22 @@ function animate() {
     camera.position.x += Math.sin(elapsedTime * 0.15) * 50;
     camera.lookAt(0, 0, 0);
 
-        // 2. Animación de construcción del Corazón 3D de Bolitas (Duración: 5 segundos exactos)
+    // 2. Animación de construcción del Corazón 3D de Estrellas (Duración: 5 segundos)
     const buildDuration = 5.0;
     const rawProgress = Math.min(elapsedTime / buildDuration, 1.0);
-    const easeProgress = 1 - Math.pow(1 - rawProgress, 3); // Suavizado de llegada
+    const easeProgress = 1 - Math.pow(1 - rawProgress, 3);
 
-    if (heartInstancedMesh) {
-        const dummy = new THREE.Object3D();
+    if (heartPointsMesh) {
+        const positions = heartPointsMesh.geometry.attributes.position.array;
         for (let i = 0; i < heartParticleCount; i++) {
             const sPos = heartStartPositions[i];
             const tPos = heartTargetPositions[i];
 
-            const curX = THREE.MathUtils.lerp(sPos.x, tPos.x, easeProgress);
-            const curY = THREE.MathUtils.lerp(sPos.y, tPos.y, easeProgress);
-            const curZ = THREE.MathUtils.lerp(sPos.z, tPos.z, easeProgress);
-
-            dummy.position.set(curX, curY, curZ);
-            dummy.updateMatrix();
-            heartInstancedMesh.setMatrixAt(i, dummy.matrix);
+            positions[i * 3] = THREE.MathUtils.lerp(sPos.x, tPos.x, easeProgress);
+            positions[i * 3 + 1] = THREE.MathUtils.lerp(sPos.y, tPos.y, easeProgress);
+            positions[i * 3 + 2] = THREE.MathUtils.lerp(sPos.z, tPos.z, easeProgress);
         }
-        heartInstancedMesh.instanceMatrix.needsUpdate = true;
+        heartPointsMesh.geometry.attributes.position.needsUpdate = true;
     }
 
     if (heartGroup) {
@@ -687,8 +686,8 @@ function setupEvents() {
 
         raycaster.setFromCamera(mouseVector, camera);
         
-        // Comprobar si hizo clic en el corazón 3D de bolitas
-        const intersects = heartInstancedMesh ? raycaster.intersectObject(heartInstancedMesh) : [];
+        // Comprobar si hizo clic en el corazón 3D de estrellas
+        const intersects = heartPointsMesh ? raycaster.intersectObject(heartPointsMesh) : [];
 
         if (intersects.length > 0) {
             trigger3DExplosion(0, 0, 0, 180);
