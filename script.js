@@ -240,20 +240,11 @@ function create3DParticleHeart() {
     if (heartInstancedMesh.instanceColor) heartInstancedMesh.instanceColor.needsUpdate = true;
     heartGroup.add(heartInstancedMesh);
 
-    // Título 3D Principal en Neón Rojo que dice SOLO "¡FELIZ CUMPLEAÑOS!" elevado a Y=460
+    // Título 3D Principal en Neón Rojo en posición Y=315 (distancia óptima justo arriba del corazón)
     titleSprite = createTextSprite("¡FELIZ CUMPLEAÑOS! 🎉", 65, "#ff0033", "#ff0000");
-    titleSprite.position.set(0, 460, 0);
+    titleSprite.position.set(0, 315, 0);
     titleSprite.material.opacity = 0; // Oculto al inicio durante la construcción
     heartGroup.add(titleSprite);
-
-    // Anillo de Luz Orbital Neón en la base
-    const ringGeo = new THREE.TorusGeometry(210, 4, 16, 100);
-    const ringMat = new THREE.MeshBasicMaterial({ color: 0xff0066, transparent: true, opacity: 0 });
-    const ringMesh = new THREE.Mesh(ringGeo, ringMat);
-    ringMesh.name = "glowRing";
-    ringMesh.rotation.x = Math.PI / 2 + 0.1;
-    ringMesh.position.y = -50;
-    heartGroup.add(ringMesh);
 
     scene.add(heartGroup);
 }
@@ -532,14 +523,6 @@ function animate() {
                 sprite.material.opacity = Math.min(sprite.material.opacity + 0.02, targetOpacity);
             }
         });
-
-        // Revelar anillo orbital neón
-        if (heartGroup) {
-            const glowRing = heartGroup.getObjectByName("glowRing");
-            if (glowRing && glowRing.material.opacity < 0.8) {
-                glowRing.material.opacity = Math.min(glowRing.material.opacity + 0.02, 0.8);
-            }
-        }
     }
 
     // 3. Animación de las Frases 3D (Desplazamiento y Flotación)
