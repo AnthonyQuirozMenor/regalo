@@ -198,7 +198,7 @@ function createStarTexture() {
         ctx.lineTo(x, y);
         rot += step;
         x = cx + Math.cos(rot) * innerRadius;
-        let y = cy + Math.sin(rot) * innerRadius;
+        y = cy + Math.sin(rot) * innerRadius;
         ctx.lineTo(x, y);
         rot += step;
     }
