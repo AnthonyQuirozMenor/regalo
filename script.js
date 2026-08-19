@@ -252,7 +252,7 @@ function create3DParticleHeart() {
         const thicknessFactor = isDust ? (1.08 + Math.random() * 0.22) : (0.88 + Math.random() * 0.22);
         
         const targetX = hx * scale * thicknessFactor;
-        const targetY = hy * scale * thicknessFactor - 5; // Posicionar el corazón justo SOBRE la nube
+        const targetY = hy * scale * thicknessFactor + 30; // Corazón elevado para apoyarse exactamente SOBRE la nube
         const targetZ = hz * scale * thicknessFactor;
 
         // Color neón para cada estrella
@@ -282,42 +282,58 @@ function create3DParticleHeart() {
     if (heartInstancedMesh.instanceColor) heartInstancedMesh.instanceColor.needsUpdate = true;
     heartGroup.add(heartInstancedMesh);
 
-    // Título 3D Principal en Neón Rojo en Y=315 (justo arriba del corazón de estrellas)
+    // Título 3D Principal en Neón Rojo en Y=340 (justo arriba del corazón de estrellas)
     titleSprite = createTextSprite("¡FELIZ CUMPLEAÑOS! 🎉", 65, "#ff0033", "#ff0000");
-    titleSprite.position.set(0, 315, 0);
+    titleSprite.position.set(0, 340, 0);
     titleSprite.material.opacity = 0; // Oculto al inicio durante la construcción
     heartGroup.add(titleSprite);
 
     scene.add(heartGroup);
 }
 
-// Función Auxiliar: Construye la Nube 3D Esponjosa al pie del Corazón
+// Función Auxiliar: Construye la Nube 3D Esponjosa, Blanca y Luminosa al pie del Corazón
 function create3DCloudBase() {
     const cloudGroup = new THREE.Group();
 
+    // Material de nube blanca esponjosa altamente visible con emissive
     const cloudMat = new THREE.MeshStandardMaterial({
         color: 0xffffff,
-        emissive: 0xff0044,
-        emissiveIntensity: 0.35,
-        roughness: 0.8,
+        emissive: 0xaa2266,
+        emissiveIntensity: 0.45,
+        roughness: 0.7,
         metalness: 0.1,
         transparent: true,
-        opacity: 0.78
+        opacity: 0.92
     });
 
-    const puffCount = isMobile ? 35 : 60;
+    const cloudGlowMat = new THREE.MeshBasicMaterial({
+        color: 0x00f0ff,
+        transparent: true,
+        opacity: 0.35
+    });
+
+    const puffCount = isMobile ? 45 : 85;
     for (let i = 0; i < puffCount; i++) {
-        const radius = Math.random() * 38 + 26;
+        const radius = Math.random() * 45 + 28;
         const sphereGeo = new THREE.SphereGeometry(radius, 16, 16);
         const puff = new THREE.Mesh(sphereGeo, cloudMat);
 
-        const px = (Math.random() - 0.5) * 480;
-        const py = -230 + (Math.random() - 0.5) * 45;
-        const pz = (Math.random() - 0.5) * 220;
+        // Nube acolchada grande y esponjosa directamente en el pie del corazón (Y = -200 a -240)
+        const px = (Math.random() - 0.5) * 540;
+        const py = -210 + (Math.random() - 0.5) * 45;
+        const pz = (Math.random() - 0.5) * 240;
 
         puff.position.set(px, py, pz);
-        puff.scale.set(1, 0.62, 1); // Forma acolchada esponjosa
+        puff.scale.set(1, 0.58, 1.1); // Forma acolchada de nube real
         cloudGroup.add(puff);
+
+        // Añadir halo de luz neón cian/rosa para máximo contraste visual
+        if (i % 3 === 0) {
+            const glowPuff = new THREE.Mesh(new THREE.SphereGeometry(radius * 1.15, 12, 12), cloudGlowMat);
+            glowPuff.position.set(px, py, pz);
+            glowPuff.scale.set(1.05, 0.60, 1.12);
+            cloudGroup.add(glowPuff);
+        }
     }
 
     heartGroup.add(cloudGroup);
