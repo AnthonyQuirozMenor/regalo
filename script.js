@@ -191,21 +191,21 @@ function create3DParticleHeart() {
     const dummy = new THREE.Object3D();
 
     for (let i = 0; i < heartParticleCount; i++) {
-        // Ecuación paramétrica de corazón 3D perfecto (Punta inferior marcada en V + Hendidura superior)
+        // Ecuación paramétrica para el contorno exterior neón del corazón (Línea hueca como la referencia)
         const t = Math.random() * Math.PI * 2;
         const v = (Math.random() - 0.5) * Math.PI;
 
         let hx = 16 * Math.pow(Math.sin(t), 3);
         let hy = (13 * Math.cos(t) - 5 * Math.cos(2 * t) - 2 * Math.cos(3 * t) - Math.cos(4 * t));
-        let hz = 7 * Math.sin(t) * Math.sin(v);
+        let hz = 6 * Math.sin(t) * Math.sin(v);
 
-        // Escalar y distribuir volumen interior y contorno nítido
+        // Concentrar el 95% de las bolitas estrictamente en el contorno/trazo exterior (borde hueco)
         const scale = 14;
-        const volumeFactor = Math.pow(Math.random(), 0.5);
+        const outlineFactor = Math.random() < 0.92 ? (0.92 + Math.random() * 0.16) : (Math.random() * 0.92);
         
-        const targetX = hx * scale * volumeFactor;
-        const targetY = hy * scale * volumeFactor + 30;
-        const targetZ = hz * scale * volumeFactor;
+        const targetX = hx * scale * outlineFactor;
+        const targetY = hy * scale * outlineFactor + 35;
+        const targetZ = hz * scale * outlineFactor;
 
         // Posición inicial: Dispersas en el espacio lejano
         const startX = (Math.random() - 0.5) * 4000;
@@ -223,19 +223,19 @@ function create3DParticleHeart() {
     heartInstancedMesh.instanceMatrix.needsUpdate = true;
     heartGroup.add(heartInstancedMesh);
 
-    // Título 3D Principal en Neón Rojo según la referencia visual
-    titleSprite = createTextSprite("¡FELIZ CUMPLEAÑOS!\nPABLO! 🎉", 60, "#ff3366", "#ff0033");
-    titleSprite.position.set(0, 185, 0);
+    // Título 3D Principal en Neón Rojo idéntico a la imagen ("¡FELIZ CUMPLEAÑOS!\nPABLO! 🎉")
+    titleSprite = createTextSprite("¡FELIZ CUMPLEAÑOS!\nPABLO! 🎉", 62, "#ff2a5f", "#ff0033");
+    titleSprite.position.set(0, 195, 0);
     titleSprite.material.opacity = 0; // Oculto al inicio durante la construcción
     heartGroup.add(titleSprite);
 
-    // Anillo de Luz Orbital Neón Rojo alrededor del corazón
-    const ringGeo = new THREE.TorusGeometry(210, 3.5, 16, 100);
+    // Anillo de Luz Orbital Neón Rojo en la base (idéntico al de la imagen)
+    const ringGeo = new THREE.TorusGeometry(200, 4, 16, 100);
     const ringMat = new THREE.MeshBasicMaterial({ color: 0xff0044, transparent: true, opacity: 0 });
     const ringMesh = new THREE.Mesh(ringGeo, ringMat);
     ringMesh.name = "glowRing";
-    ringMesh.rotation.x = Math.PI / 2;
-    ringMesh.position.y = -30;
+    ringMesh.rotation.x = Math.PI / 2 + 0.1;
+    ringMesh.position.y = -50;
     heartGroup.add(ringMesh);
 
     scene.add(heartGroup);
