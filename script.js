@@ -189,13 +189,12 @@ function create3DParticleHeart() {
     const dummy = new THREE.Object3D();
     const color = new THREE.Color();
 
-    // Paleta de colores en tonos de rojo intenso neón y carmesí
-    const redPalette = [
-        new THREE.Color(0xff0033), // Rojo Neón Vivo
-        new THREE.Color(0xff0044), // Rojo Carmesí
-        new THREE.Color(0xcc002b), // Rojo Rubí Profundo
-        new THREE.Color(0xff1a4d), // Rojo Escarlata Brillante
-        new THREE.Color(0xff3356)  // Rojo Neón Rosáceo Accent
+    // Paleta de colores 100% Rojo Puro Neón e Intenso
+    const pureRedPalette = [
+        new THREE.Color(0xff0033), // Rojo Neón Puro
+        new THREE.Color(0xff0000), // Rojo Absoluto
+        new THREE.Color(0xdd002b), // Rojo Carmesí Intenso
+        new THREE.Color(0xff1a40)  // Rojo Escarlata Fuego
     ];
 
     for (let i = 0; i < heartParticleCount; i++) {
@@ -213,11 +212,11 @@ function create3DParticleHeart() {
         const thicknessFactor = 0.84 + Math.random() * 0.30;
         
         const targetX = hx * scale * thicknessFactor;
-        const targetY = hy * scale * thicknessFactor + 35;
+        const targetY = hy * scale * thicknessFactor + 20; // Ajustar Y del corazón para más espacio libre
         const targetZ = hz * scale * thicknessFactor;
 
-        // Asignar color rojo neón brillante a todas las bolitas
-        const chosenRed = redPalette[Math.floor(Math.random() * redPalette.length)];
+        // Asignar color 100% rojo puro neón a todas las bolitas
+        const chosenRed = pureRedPalette[Math.floor(Math.random() * pureRedPalette.length)];
         color.copy(chosenRed);
         heartInstancedMesh.setColorAt(i, color);
 
@@ -238,9 +237,9 @@ function create3DParticleHeart() {
     if (heartInstancedMesh.instanceColor) heartInstancedMesh.instanceColor.needsUpdate = true;
     heartGroup.add(heartInstancedMesh);
 
-    // Título 3D Principal en Neón Rojo resplandeciente (Elevado a Y=285 para no chocar con el corazón)
-    titleSprite = createTextSprite("¡FELIZ CUMPLEAÑOS!\nPABLO! 🎉", 62, "#ff2a5f", "#ff0044");
-    titleSprite.position.set(0, 285, 0);
+    // Título 3D Principal en Neón Rojo (Elevado a Y=390 para máxima separación y cero colisiones)
+    titleSprite = createTextSprite("¡FELIZ CUMPLEAÑOS!\nPABLO! 🎉", 60, "#ff0033", "#ff0000");
+    titleSprite.position.set(0, 390, 0);
     titleSprite.material.opacity = 0; // Oculto al inicio durante la construcción
     heartGroup.add(titleSprite);
 
