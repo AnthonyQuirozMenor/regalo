@@ -105,13 +105,16 @@ let targetCameraX = 0, targetCameraY = 0;
 const raycaster = new THREE.Raycaster();
 const mouseVector = new THREE.Vector2();
 
-document.addEventListener("DOMContentLoaded", () => {
-    // Iniciar Three.js directamente al universo 3D
-    initThreeEngine();
+if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", startApp);
+} else {
+    startApp();
+}
 
-    // Eventos de entrada
+function startApp() {
+    initThreeEngine();
     setupEvents();
-});
+}
 
 function initThreeEngine() {
     const container = document.getElementById("webgl-container");
@@ -162,9 +165,6 @@ function initThreeEngine() {
 }
 
 
-/* --------------------------------------------------------------------------
-   4. CREACIÓN DEL CORAZÓN 3D DE ESTRELLAS ROJAS SOBRE NUBE ESPONJOSA
-   -------------------------------------------------------------------------- */
 /* --------------------------------------------------------------------------
    4. CREACIÓN DEL CORAZÓN 3D DE ESTRELLAS ROJAS SOBRE NUBE ESPONJOSA
    -------------------------------------------------------------------------- */
