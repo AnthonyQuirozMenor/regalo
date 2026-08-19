@@ -149,10 +149,10 @@ function initThreeEngine() {
     magentaPointLight.position.set(0, 500, -300);
     scene.add(magentaPointLight);
 
-    // 5. Crear Elemento Central 3D (Pastel Neón de Cumpleaños)
-    createCentral3DCake();
+    // 5. Crear Corazón 3D de miles de bolitas rojas (Construcción en 5 segundos)
+    create3DParticleHeart();
 
-    // 6. Crear Nube de Frases 3D (Text Sprites en X, Y, Z)
+    // 6. Crear Nube de Frases 3D (Text Sprites en X, Y, Z - Ocultas al inicio)
     create3DTextCloud();
 
     // 7. Crear Sistema de Partículas 3D (Polvo Espacial / Estrellas)
@@ -164,100 +164,81 @@ function initThreeEngine() {
 
 
 /* --------------------------------------------------------------------------
-   4. CREACIÓN DEL ELEMENTO CENTRAL 3D (PASTEL NEÓN FESTIVO)
+   4. CREACIÓN DEL CORAZÓN 3D DE BOLITAS ROJAS Y ANIMACIÓN DE CONSTRUCCIÓN
    -------------------------------------------------------------------------- */
-function createCentral3DCake() {
-    centralCakeGroup = new THREE.Group();
+let heartGroup, heartInstancedMesh;
+let heartParticleCount = isMobile ? 1200 : 2200;
+let heartStartPositions = [];
+let heartTargetPositions = [];
+let isHeartAssembled = false;
+let titleSprite;
 
-    // Materiales Neón y Metálicos
-    const matGold = new THREE.MeshStandardMaterial({
-        color: 0xffd700,
-        metalness: 0.8,
+function create3DParticleHeart() {
+    heartGroup = new THREE.Group();
+
+    // Geometría y material neón carmesí para las bolitas rojas
+    const sphereGeo = new THREE.SphereGeometry(3.5, 10, 10);
+    const sphereMat = new THREE.MeshStandardMaterial({
+        color: 0xff0033,
+        emissive: 0xff0044,
+        emissiveIntensity: 0.9,
         roughness: 0.2,
-        emissive: 0xaa7700,
-        emissiveIntensity: 0.3
+        metalness: 0.4
     });
 
-    const matCyan = new THREE.MeshStandardMaterial({
-        color: 0x00f0ff,
-        metalness: 0.6,
-        roughness: 0.3,
-        emissive: 0x00a8ff,
-        emissiveIntensity: 0.4
-    });
-
-    const matMagenta = new THREE.MeshStandardMaterial({
-        color: 0xff0055,
-        metalness: 0.5,
-        roughness: 0.3,
-        emissive: 0xff0055,
-        emissiveIntensity: 0.5
-    });
-
-    const matFlame = new THREE.MeshBasicMaterial({
-        color: 0xffea00
-    });
-
-    // Base Nivel 1 del Pastel (Grande)
-    const baseTier = new THREE.Mesh(new THREE.CylinderGeometry(140, 150, 60, 32), matCyan);
-    baseTier.position.y = -60;
-    centralCakeGroup.add(baseTier);
-
-    // Nivel 2 del Pastel (Mediano)
-    const midTier = new THREE.Mesh(new THREE.CylinderGeometry(100, 105, 50, 32), matGold);
-    midTier.position.y = -5;
-    centralCakeGroup.add(midTier);
-
-    // Nivel 3 del Pastel (Superior)
-    const topTier = new THREE.Mesh(new THREE.CylinderGeometry(65, 70, 40, 32), matMagenta);
-    topTier.position.y = 40;
-    centralCakeGroup.add(topTier);
-
-    // Generar exactamente 20 Velas Neón y Fuego sobre el pastel
-    const candlePositions = [];
+    heartInstancedMesh = new THREE.InstancedMesh(sphereGeo, sphereMat, heartParticleCount);
     
-    // Anillo exterior de 12 velas (radio 50)
-    for (let i = 0; i < 12; i++) {
-        const angle = (i / 12) * Math.PI * 2;
-        candlePositions.push({ x: Math.cos(angle) * 50, z: Math.sin(angle) * 50 });
+    const dummy = new THREE.Object3D();
+
+    for (let i = 0; i < heartParticleCount; i++) {
+        // Ecuación paramétrica para forma de corazón 3D
+        const t = Math.random() * Math.PI * 2;
+        const u = (Math.random() - 0.5) * Math.PI;
+
+        let hx = 16 * Math.pow(Math.sin(t), 3) * Math.cos(u);
+        let hy = (13 * Math.cos(t) - 5 * Math.cos(2*t) - 2 * Math.cos(3*t) - Math.cos(4*t));
+        let hz = 16 * Math.pow(Math.sin(t), 3) * Math.sin(u);
+
+        // Escalar y añadir volumen interior estocástico
+        const scale = 14;
+        const jitter = (Math.random() * 0.35 + 0.65);
+        
+        const targetX = hx * scale * jitter;
+        const targetY = hy * scale * jitter + 20;
+        const targetZ = hz * scale * jitter;
+
+        // Posición inicial: Dispersas en el espacio lejano
+        const startX = (Math.random() - 0.5) * 4000;
+        const startY = (Math.random() - 0.5) * 4000;
+        const startZ = (Math.random() - 0.5) * 4000;
+
+        heartStartPositions.push(new THREE.Vector3(startX, startY, startZ));
+        heartTargetPositions.push(new THREE.Vector3(targetX, targetY, targetZ));
+
+        dummy.position.set(startX, startY, startZ);
+        dummy.updateMatrix();
+        heartInstancedMesh.setMatrixAt(i, dummy.matrix);
     }
-    // Anillo interior de 7 velas (radio 26)
-    for (let i = 0; i < 7; i++) {
-        const angle = (i / 7) * Math.PI * 2 + 0.3;
-        candlePositions.push({ x: Math.cos(angle) * 26, z: Math.sin(angle) * 26 });
-    }
-    // 1 vela central (centro exacto)
-    candlePositions.push({ x: 0, z: 0 }); // Total: 12 + 7 + 1 = 20 velas
 
-    candlePositions.forEach(pos => {
-        // Vela
-        const candle = new THREE.Mesh(new THREE.CylinderGeometry(2.5, 2.5, 25, 12), matGold);
-        candle.position.set(pos.x, 72.5, pos.z);
-        centralCakeGroup.add(candle);
+    heartInstancedMesh.instanceMatrix.needsUpdate = true;
+    heartGroup.add(heartInstancedMesh);
 
-        // Llama de fuego brillante
-        const flame = new THREE.Mesh(new THREE.SphereGeometry(4.5, 12, 12), matFlame);
-        flame.position.set(pos.x, 88, pos.z);
-        flame.scale.set(1, 1.6, 1);
-        centralCakeGroup.add(flame);
-    });
+    // Título 3D Principal en Neón apilado ("FELIZ\nCUMPLEAÑOS\nPABLO! 🎉")
+    titleSprite = createTextSprite("FELIZ\nCUMPLEAÑOS\nPABLO! 🎉", 58, "#ffffff", "#ff0044");
+    titleSprite.position.set(0, 180, 0);
+    titleSprite.material.opacity = 0; // Oculto al inicio durante la construcción
+    heartGroup.add(titleSprite);
 
-    // Texto 3D Principal en Neón apilado (una palabra sobre otra) flotando sobre el pastel
-    const titleSprite = createTextSprite("FELIZ\nCUMPLEAÑOS\nPABLO! 🎉", 58, "#ffffff", "#ffd700");
-    titleSprite.position.set(0, 160, 0);
-    centralCakeGroup.add(titleSprite);
-
-    // Anillo de Luz Orbital Neón al rededor del pastel
-    const ringGeo = new THREE.TorusGeometry(190, 3, 16, 100);
-    const ringMat = new THREE.MeshBasicMaterial({ color: 0x00f0ff });
+    // Anillo de Luz Orbital Neón alrededor del corazón
+    const ringGeo = new THREE.TorusGeometry(210, 3, 16, 100);
+    const ringMat = new THREE.MeshBasicMaterial({ color: 0xff0055, transparent: true, opacity: 0 });
     const ringMesh = new THREE.Mesh(ringGeo, ringMat);
+    ringMesh.name = "glowRing";
     ringMesh.rotation.x = Math.PI / 2;
     ringMesh.position.y = -30;
-    centralCakeGroup.add(ringMesh);
+    heartGroup.add(ringMesh);
 
-    // Escala inicial
-    centralCakeGroup.position.set(0, 0, 0);
-    scene.add(centralCakeGroup);
+    scene.add(heartGroup);
 }
 
 
@@ -270,7 +251,7 @@ function create3DTextCloud() {
     const emojiList = CONFIG.LISTA_EMOJIS;
 
     for (let i = 0; i < totalItems; i++) {
-        const isEmoji = Math.random() < 0.25; // 25% de probabilidad de ser un emoji 3D solo
+        const isEmoji = Math.random() < 0.25;
         let textContent, fontColor, glowColor, fontSize;
 
         if (isEmoji) {
@@ -280,7 +261,6 @@ function create3DTextCloud() {
             fontSize = 75;
         } else {
             textContent = phraseList[Math.floor(Math.random() * phraseList.length)];
-            // Alternar colores neón para dinamismo
             const colorType = i % 4;
             if (colorType === 0) { fontColor = "#ffffff"; glowColor = CONFIG.COLOR_CYAN; }
             else if (colorType === 1) { fontColor = CONFIG.COLOR_GOLD; glowColor = "#ffaa00"; }
@@ -289,10 +269,8 @@ function create3DTextCloud() {
             fontSize = 38;
         }
 
-        // Generar Texture Sprite en Canvas 2D sin recortes
         const sprite = createTextSprite(textContent, fontSize, fontColor, glowColor);
 
-        // Distribuir en Espacio 3D (Coordenadas X, Y, Z)
         const radius = Math.random() * 1400 + 350;
         const theta = Math.random() * Math.PI * 2;
         const phi = Math.acos((Math.random() * 2) - 1);
@@ -301,17 +279,19 @@ function create3DTextCloud() {
         sprite.position.y = radius * Math.sin(phi) * Math.sin(theta);
         sprite.position.z = radius * Math.cos(phi);
 
-        // Guardar velocidad de movimiento suave individual
+        const zDist = Math.abs(sprite.position.z);
+        const calcTargetOpacity = Math.max(0.35, 1 - (zDist / 2200));
+
         sprite.userData = {
             speedX: (Math.random() - 0.5) * 0.6,
             speedY: (Math.random() - 0.5) * 0.6,
             speedZ: (Math.random() - 0.5) * 0.4,
-            pulseOffset: Math.random() * Math.PI * 2
+            pulseOffset: Math.random() * Math.PI * 2,
+            targetOpacity: calcTargetOpacity
         };
 
-        // Opacidad sutil según la profundidad Z
-        const zDist = Math.abs(sprite.position.z);
-        sprite.material.opacity = Math.max(0.35, 1 - (zDist / 2200));
+        // Oculto al inicio (opacidad 0), se revela tras los 5 segundos de construcción
+        sprite.material.opacity = 0;
 
         scene.add(sprite);
         phraseSprites.push(sprite);
@@ -488,12 +468,61 @@ function animate() {
     camera.position.x += Math.sin(elapsedTime * 0.15) * 50;
     camera.lookAt(0, 0, 0);
 
-    // 2. Animación del Pastel 3D Central
-    if (centralCakeGroup) {
-        centralCakeGroup.rotation.y = elapsedTime * 0.4;
-        // Escala pulsante suave
+        // 2. Animación de construcción del Corazón 3D de Bolitas (Duración: 5 segundos exactos)
+    const buildDuration = 5.0;
+    const rawProgress = Math.min(elapsedTime / buildDuration, 1.0);
+    const easeProgress = 1 - Math.pow(1 - rawProgress, 3); // Suavizado de llegada
+
+    if (heartInstancedMesh) {
+        const dummy = new THREE.Object3D();
+        for (let i = 0; i < heartParticleCount; i++) {
+            const sPos = heartStartPositions[i];
+            const tPos = heartTargetPositions[i];
+
+            const curX = THREE.MathUtils.lerp(sPos.x, tPos.x, easeProgress);
+            const curY = THREE.MathUtils.lerp(sPos.y, tPos.y, easeProgress);
+            const curZ = THREE.MathUtils.lerp(sPos.z, tPos.z, easeProgress);
+
+            dummy.position.set(curX, curY, curZ);
+            dummy.updateMatrix();
+            heartInstancedMesh.setMatrixAt(i, dummy.matrix);
+        }
+        heartInstancedMesh.instanceMatrix.needsUpdate = true;
+    }
+
+    if (heartGroup) {
+        heartGroup.rotation.y = elapsedTime * 0.35;
         const scalePulse = 1 + Math.sin(elapsedTime * 2.5) * 0.04;
-        centralCakeGroup.scale.set(scalePulse, scalePulse, scalePulse);
+        heartGroup.scale.set(scalePulse, scalePulse, scalePulse);
+    }
+
+    // Al llegar a los 5 segundos: detonar fiesta y revelar frases y título
+    if (rawProgress >= 1.0) {
+        if (!isHeartAssembled) {
+            isHeartAssembled = true;
+            trigger3DExplosion(0, 0, 0, 220); // Explosión de luz al completarse el corazón
+        }
+
+        // Revelar título 3D
+        if (titleSprite && titleSprite.material.opacity < 1) {
+            titleSprite.material.opacity = Math.min(titleSprite.material.opacity + 0.03, 1.0);
+        }
+
+        // Revelar frases 3D en cascada
+        phraseSprites.forEach(sprite => {
+            const targetOpacity = sprite.userData.targetOpacity || 0.85;
+            if (sprite.material.opacity < targetOpacity) {
+                sprite.material.opacity = Math.min(sprite.material.opacity + 0.02, targetOpacity);
+            }
+        });
+
+        // Revelar anillo orbital neón
+        if (heartGroup) {
+            const glowRing = heartGroup.getObjectByName("glowRing");
+            if (glowRing && glowRing.material.opacity < 0.8) {
+                glowRing.material.opacity = Math.min(glowRing.material.opacity + 0.02, 0.8);
+            }
+        }
     }
 
     // 3. Animación de las Frases 3D (Desplazamiento y Flotación)
@@ -505,14 +534,9 @@ function animate() {
         sprite.position.y += uData.speedY;
         sprite.position.z += uData.speedZ;
 
-        // Rebote o re-circulación suave si salen del límite 3D
         if (Math.abs(sprite.position.x) > 1600) uData.speedX *= -1;
         if (Math.abs(sprite.position.y) > 1100) uData.speedY *= -1;
         if (Math.abs(sprite.position.z) > 2200) uData.speedZ *= -1;
-
-        // Pulso leve de escala
-        const pulse = 1 + Math.sin(elapsedTime * 2 + uData.pulseOffset) * 0.05;
-        const baseScaleX = sprite.scale.x;
     }
 
     // 4. Rotar Sistema de Partículas de Fondo
@@ -530,7 +554,6 @@ function animate() {
         p.position.y += u.vy;
         p.position.z += u.vz;
         
-        // Gravedad suave
         u.vy -= 0.15;
         u.life -= u.decay;
         p.material.opacity = u.life;
@@ -551,10 +574,8 @@ function animate() {
    9. EVENTOS DE INTERACCIÓN Y REPRODUCCIÓN DE MÚSICA
    -------------------------------------------------------------------------- */
 function setupEvents() {
-    // Resize ventana
     window.addEventListener('resize', onWindowResize);
 
-    // Movimiento de mouse / Touch para la cámara
     window.addEventListener('mousemove', (e) => {
         mouseX = (e.clientX / window.innerWidth) * 2 - 1;
         mouseY = (e.clientY / window.innerHeight) * 2 - 1;
@@ -569,28 +590,26 @@ function setupEvents() {
 
     // Clicks en Pantalla (Dispara explosiones 3D en las coordenadas clicadas)
     window.addEventListener('pointerdown', (e) => {
-        // Si hizo clic en un botón de interfaz, no disparar explosión 3D
-        if (e.target.closest("button") || e.target.closest(".intro-box")) return;
+        if (e.target.closest("button")) return;
 
         mouseVector.x = (e.clientX / window.innerWidth) * 2 - 1;
         mouseVector.y = -(e.clientY / window.innerHeight) * 2 + 1;
 
         raycaster.setFromCamera(mouseVector, camera);
         
-        // Comprobar si hizo clic en el pastel 3D central
-        const intersects = raycaster.intersectObjects(centralCakeGroup.children, true);
+        // Comprobar si hizo clic en el corazón 3D de bolitas
+        const intersects = heartInstancedMesh ? raycaster.intersectObject(heartInstancedMesh) : [];
 
         if (intersects.length > 0) {
-            // Mega explosión de fiesta en el centro
             trigger3DExplosion(0, 0, 0, 180);
             
-            // Animación de pulso fuerte en el pastel
-            centralCakeGroup.scale.set(1.4, 1.4, 1.4);
-            setTimeout(() => {
-                centralCakeGroup.scale.set(1, 1, 1);
-            }, 300);
+            if (heartGroup) {
+                heartGroup.scale.set(1.35, 1.35, 1.35);
+                setTimeout(() => {
+                    heartGroup.scale.set(1, 1, 1);
+                }, 300);
+            }
         } else {
-            // Proyectar el punto de click en coordenadas 3D en el espacio
             const vector = new THREE.Vector3(mouseVector.x, mouseVector.y, 0.5);
             vector.unproject(camera);
             const dir = vector.sub(camera.position).normalize();
