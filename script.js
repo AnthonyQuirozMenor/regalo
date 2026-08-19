@@ -191,21 +191,21 @@ function create3DParticleHeart() {
     const dummy = new THREE.Object3D();
 
     for (let i = 0; i < heartParticleCount; i++) {
-        // Ecuación paramétrica para forma de corazón 3D
+        // Ecuación paramétrica de corazón 3D perfecto (Punta inferior marcada en V + Hendidura superior)
         const t = Math.random() * Math.PI * 2;
-        const u = (Math.random() - 0.5) * Math.PI;
+        const v = (Math.random() - 0.5) * Math.PI;
 
-        let hx = 16 * Math.pow(Math.sin(t), 3) * Math.cos(u);
-        let hy = (13 * Math.cos(t) - 5 * Math.cos(2*t) - 2 * Math.cos(3*t) - Math.cos(4*t));
-        let hz = 16 * Math.pow(Math.sin(t), 3) * Math.sin(u);
+        let hx = 16 * Math.pow(Math.sin(t), 3);
+        let hy = (13 * Math.cos(t) - 5 * Math.cos(2 * t) - 2 * Math.cos(3 * t) - Math.cos(4 * t));
+        let hz = 7 * Math.sin(t) * Math.sin(v);
 
-        // Escalar y añadir volumen interior estocástico
+        // Escalar y distribuir volumen interior y contorno nítido
         const scale = 14;
-        const jitter = (Math.random() * 0.35 + 0.65);
+        const volumeFactor = Math.pow(Math.random(), 0.5);
         
-        const targetX = hx * scale * jitter;
-        const targetY = hy * scale * jitter + 20;
-        const targetZ = hz * scale * jitter;
+        const targetX = hx * scale * volumeFactor;
+        const targetY = hy * scale * volumeFactor + 30;
+        const targetZ = hz * scale * volumeFactor;
 
         // Posición inicial: Dispersas en el espacio lejano
         const startX = (Math.random() - 0.5) * 4000;
