@@ -189,13 +189,13 @@ function create3DParticleHeart() {
     const dummy = new THREE.Object3D();
     const color = new THREE.Color();
 
-    // Paleta de colores multicolor neón profunda (Rojo, Rosa, Púrpura, Azul)
-    const colorPalette = [
-        new THREE.Color(0xff0044), // Rojo Neón Carmesí
-        new THREE.Color(0xff0088), // Rosa Neón Vivo
-        new THREE.Color(0xaa00ff), // Púrpura Eléctrico
-        new THREE.Color(0x0066ff), // Azul Espacial
-        new THREE.Color(0x00f0ff)  // Cian Neón Accent
+    // Paleta de colores en tonos de rojo intenso neón y carmesí
+    const redPalette = [
+        new THREE.Color(0xff0033), // Rojo Neón Vivo
+        new THREE.Color(0xff0044), // Rojo Carmesí
+        new THREE.Color(0xcc002b), // Rojo Rubí Profundo
+        new THREE.Color(0xff1a4d), // Rojo Escarlata Brillante
+        new THREE.Color(0xff3356)  // Rojo Neón Rosáceo Accent
     ];
 
     for (let i = 0; i < heartParticleCount; i++) {
@@ -207,9 +207,8 @@ function create3DParticleHeart() {
         let hy = (13 * Math.cos(t) - 5 * Math.cos(2 * t) - 2 * Math.cos(3 * t) - Math.cos(4 * t));
         let hz = 8 * Math.sin(t) * Math.sin(v);
 
-        // INSTRUCCIÓN CRUCIAL: Las partículas crean ÚNICAMENTE la masa densa y el contorno exterior del corazón,
+        // Las partículas crean ÚNICAMENTE el marco denso y el contorno exterior del corazón,
         // dejando el centro completamente vacío y transparente al fondo espacial.
-        // Espesor del trazo hueco: entre 0.82 y 1.15
         const scale = 14.5;
         const thicknessFactor = 0.84 + Math.random() * 0.30;
         
@@ -217,9 +216,9 @@ function create3DParticleHeart() {
         const targetY = hy * scale * thicknessFactor + 35;
         const targetZ = hz * scale * thicknessFactor;
 
-        // Asignar color gradiente neón multicolor según la posición y azar
-        const c1 = colorPalette[Math.floor(Math.random() * colorPalette.length)];
-        color.copy(c1);
+        // Asignar color rojo neón brillante a todas las bolitas
+        const chosenRed = redPalette[Math.floor(Math.random() * redPalette.length)];
+        color.copy(chosenRed);
         heartInstancedMesh.setColorAt(i, color);
 
         // Posición inicial: Dispersas ampliamente en el espacio profundo
