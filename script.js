@@ -148,7 +148,7 @@ function initThreeEngine() {
     goldPointLight.position.set(400, -200, 500);
     scene.add(goldPointLight);
 
-    // 5. Crear Corazón 3D de miles de bolitas rojas (Construcción en 5 segundos)
+    // 5. Crear Nube 3D al pie del corazón y Corazón de ESTRELLAS (Construcción en 5 segundos)
     create3DParticleHeart();
 
     // 6. Crear Nube de Frases 3D (Text Sprites en X, Y, Z - Ocultas al inicio)
@@ -163,7 +163,7 @@ function initThreeEngine() {
 
 
 /* --------------------------------------------------------------------------
-   4. CREACIÓN DEL CORAZÓN 3D DE BOLITAS ROJAS Y ANIMACIÓN DE CONSTRUCCIÓN
+   4. CREACIÓN DEL CORAZÓN 3D DE ESTRELLAS ROJAS SOBRE NUBE ESPONJOSA
    -------------------------------------------------------------------------- */
 let heartGroup, heartInstancedMesh;
 let heartParticleCount = isMobile ? 3500 : 7000;
@@ -172,15 +172,56 @@ let heartTargetPositions = [];
 let isHeartAssembled = false;
 let titleSprite;
 
+// Generador de textura 2D HD para Estrellas Neón de 5 Puntas
+function createStarTexture() {
+    const canvas = document.createElement('canvas');
+    canvas.width = 64;
+    canvas.height = 64;
+    const ctx = canvas.getContext('2d');
+
+    ctx.shadowColor = '#ff0033';
+    ctx.shadowBlur = 14;
+    ctx.fillStyle = '#ffffff';
+
+    const cx = 32, cy = 32, spikes = 5, outerRadius = 24, innerRadius = 9;
+    let rot = Math.PI / 2 * 3;
+    let step = Math.PI / spikes;
+
+    ctx.beginPath();
+    ctx.moveTo(cx, cy - outerRadius);
+    for (let i = 0; i < spikes; i++) {
+        let x = cx + Math.cos(rot) * outerRadius;
+        let y = cy + Math.sin(rot) * outerRadius;
+        ctx.lineTo(x, y);
+        rot += step;
+        x = cx + Math.cos(rot) * innerRadius;
+        let y = cy + Math.sin(rot) * innerRadius;
+        ctx.lineTo(x, y);
+        rot += step;
+    }
+    ctx.lineTo(cx, cy - outerRadius);
+    ctx.closePath();
+    ctx.fill();
+
+    const texture = new THREE.CanvasTexture(canvas);
+    texture.minFilter = THREE.LinearFilter;
+    return texture;
+}
+
 function create3DParticleHeart() {
     heartGroup = new THREE.Group();
 
-    // Geometría y material de partículas volumétricas con color de vértice
-    const particleGeo = new THREE.SphereGeometry(2.8, 8, 8);
-    const particleMat = new THREE.MeshStandardMaterial({
-        roughness: 0.1,
-        metalness: 0.3,
-        emissiveIntensity: 0.95
+    // 1. CREAR LA NUBE ESPONJOSA 3D EN LA BASE / PIE DEL CORAZÓN
+    create3DCloudBase();
+
+    // 2. CREAR LAS ESTRELLAS ROJAS NEÓN QUE FORMAN EL CORAZÓN 3D
+    const starTexture = createStarTexture();
+    const particleGeo = new THREE.PlaneGeometry(11, 11);
+    const particleMat = new THREE.MeshBasicMaterial({
+        map: starTexture,
+        transparent: true,
+        depthWrite: false,
+        side: THREE.DoubleSide
     });
 
     heartInstancedMesh = new THREE.InstancedMesh(particleGeo, particleMat, heartParticleCount);
@@ -188,12 +229,12 @@ function create3DParticleHeart() {
     const dummy = new THREE.Object3D();
     const color = new THREE.Color();
 
-    // Paleta de colores 100% Rojo Puro Neón e Intenso
     const pureRedPalette = [
         new THREE.Color(0xff0033), // Rojo Neón Puro
-        new THREE.Color(0xff0000), // Rojo Absoluto
-        new THREE.Color(0xdd002b), // Rojo Carmesí Intenso
-        new THREE.Color(0xff1a40)  // Rojo Escarlata Fuego
+        new THREE.Color(0xff0044), // Rojo Carmesí
+        new THREE.Color(0xdd002b), // Rojo Rubí
+        new THREE.Color(0xff1a40), // Escarlata
+        new THREE.Color(0xffaa00)  // Destello Dorado Neón Accent
     ];
 
     for (let i = 0; i < heartParticleCount; i++) {
@@ -205,22 +246,22 @@ function create3DParticleHeart() {
         let hy = (13 * Math.cos(t) - 5 * Math.cos(2 * t) - 2 * Math.cos(3 * t) - Math.cos(4 * t));
         let hz = 8 * Math.sin(t) * Math.sin(v);
 
-        // Estructura volumétrica: 85% marco exterior nítido, 15% destellos de polvo estelar
+        // Estructura de ESTRELLAS: 85% marco exterior nítido, 15% destellos de estrellas flotantes
         const scale = 14.5;
         const isDust = Math.random() < 0.15;
         const thicknessFactor = isDust ? (1.08 + Math.random() * 0.22) : (0.88 + Math.random() * 0.22);
         
         const targetX = hx * scale * thicknessFactor;
-        const targetY = hy * scale * thicknessFactor - 15; // Mayor espacio de separación vertical
+        const targetY = hy * scale * thicknessFactor - 5; // Posicionar el corazón justo SOBRE la nube
         const targetZ = hz * scale * thicknessFactor;
 
-        // Asignar color 100% rojo puro neón a todas las bolitas
+        // Color neón para cada estrella
         const chosenRed = pureRedPalette[Math.floor(Math.random() * pureRedPalette.length)];
         color.copy(chosenRed);
         heartInstancedMesh.setColorAt(i, color);
 
-        // Variación dinámica de escala de partículas (polvo fino y destellos principales)
-        const pScale = isDust ? (Math.random() * 0.4 + 0.5) : (Math.random() * 0.7 + 0.85);
+        // Escala y rotación aleatoria de cada estrella
+        const pScale = isDust ? (Math.random() * 0.5 + 0.6) : (Math.random() * 0.8 + 0.9);
 
         // Posición inicial: Dispersas ampliamente en el espacio profundo
         const startX = (Math.random() - 0.5) * 4500;
@@ -231,6 +272,7 @@ function create3DParticleHeart() {
         heartTargetPositions.push(new THREE.Vector3(targetX, targetY, targetZ));
 
         dummy.position.set(startX, startY, startZ);
+        dummy.rotation.z = Math.random() * Math.PI * 2; // Rotación variada de estrellas
         dummy.scale.set(pScale, pScale, pScale);
         dummy.updateMatrix();
         heartInstancedMesh.setMatrixAt(i, dummy.matrix);
@@ -240,13 +282,45 @@ function create3DParticleHeart() {
     if (heartInstancedMesh.instanceColor) heartInstancedMesh.instanceColor.needsUpdate = true;
     heartGroup.add(heartInstancedMesh);
 
-    // Título 3D Principal en Neón Rojo en posición Y=315 (distancia óptima justo arriba del corazón)
+    // Título 3D Principal en Neón Rojo en Y=315 (justo arriba del corazón de estrellas)
     titleSprite = createTextSprite("¡FELIZ CUMPLEAÑOS! 🎉", 65, "#ff0033", "#ff0000");
     titleSprite.position.set(0, 315, 0);
     titleSprite.material.opacity = 0; // Oculto al inicio durante la construcción
     heartGroup.add(titleSprite);
 
     scene.add(heartGroup);
+}
+
+// Función Auxiliar: Construye la Nube 3D Esponjosa al pie del Corazón
+function create3DCloudBase() {
+    const cloudGroup = new THREE.Group();
+
+    const cloudMat = new THREE.MeshStandardMaterial({
+        color: 0xffffff,
+        emissive: 0xff0044,
+        emissiveIntensity: 0.35,
+        roughness: 0.8,
+        metalness: 0.1,
+        transparent: true,
+        opacity: 0.78
+    });
+
+    const puffCount = isMobile ? 35 : 60;
+    for (let i = 0; i < puffCount; i++) {
+        const radius = Math.random() * 38 + 26;
+        const sphereGeo = new THREE.SphereGeometry(radius, 16, 16);
+        const puff = new THREE.Mesh(sphereGeo, cloudMat);
+
+        const px = (Math.random() - 0.5) * 480;
+        const py = -230 + (Math.random() - 0.5) * 45;
+        const pz = (Math.random() - 0.5) * 220;
+
+        puff.position.set(px, py, pz);
+        puff.scale.set(1, 0.62, 1); // Forma acolchada esponjosa
+        cloudGroup.add(puff);
+    }
+
+    heartGroup.add(cloudGroup);
 }
 
 
